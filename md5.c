@@ -20,6 +20,12 @@ typedef uint32_t word;
 // (shift left and add bits that wrapped around)
 #define ROTL(x, s) ((x << s) + (x >> (32 - s)))
 
+// structs
+struct Block {
+    word words[16];
+    struct Block* next;
+};
+
 // function declarations (not sure if I actually need these?)
 void printWordBits(word w);
 word * generateT();
@@ -49,6 +55,8 @@ int main() {
 
     word *T = generateT();
 
+    word M[2][16];
+
     return 0;
 }
 
@@ -73,4 +81,17 @@ word * generateT() {
     }
 
     return T;
+}
+
+struct Block * readFileAsBlocks(char *filePath) {
+    FILE *filePtr = fopen(filePath, "rb");
+
+    if (!filePtr) {
+        printf("File not found: %s\n", filePath);
+        exit(1);
+    }
+
+    struct Block* head = (struct Block*)malloc(sizeof(struct Block));
+
+    // read file and build word blocks here
 }
