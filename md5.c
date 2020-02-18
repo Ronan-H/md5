@@ -1,8 +1,14 @@
-#include<stdio.h>
-#include<inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 // RFC: a "word" is a 32 bit quantity
 typedef uint32_t word;
+
+// integer constants
+#define T_MULTIPLIER 4294967296
 
 // function-like macros
 #define F(x, y, z) (x & y | (~x & z))
@@ -16,10 +22,10 @@ typedef uint32_t word;
 
 // function declarations (not sure if I actually need these?)
 void printWordBits(word w);
+word * generateT();
 
 int main() {
     // entry point of the program
-    printf("Hello World!\n");
 
     word test = 0;
     printf("Test value: %" PRIu32 "\n", test);
@@ -41,6 +47,8 @@ int main() {
     fx = ROTL(fx, 17);
     printWordBits(fx);
 
+    word *T = generateT();
+
     return 0;
 }
 
@@ -52,4 +60,17 @@ void printWordBits(word w) {
     }
 
     printf("\n");
+}
+
+// generate the 64 element array T, as per the RFC
+word * generateT() {
+    // use static so T can be used when out of scope
+    static word T[64];
+
+    for (int i = 1; i <= 64; i++) {
+        T[i] = (word)(T_MULTIPLIER * fabs(sin(i)));
+        printf("T[i]: %" PRIu32 "\n", T[i]);
+    }
+
+    return T;
 }
