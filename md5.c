@@ -55,7 +55,7 @@ int main() {
 
     word *T = generateT();
 
-    word M[2][16];
+    struct Block *M = readFileAsBlocks(".gitignore");
 
     return 0;
 }
@@ -93,5 +93,13 @@ struct Block * readFileAsBlocks(char *filePath) {
 
     struct Block* head = (struct Block*)malloc(sizeof(struct Block));
 
+    // reading binary files: https://stackoverflow.com/questions/28269995/c-read-file-byte-by-byte-using-fread
+    // seek to end of the file to find it's length
+    fseek(filePtr, 0, SEEK_END);          
+    long fileLen = ftell(filePtr);            
+    rewind(filePtr);
+
     // read file and build word blocks here
+
+    printf("File is %d bytes long.\n", fileLen);
 }
