@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 // RFC: a "word" is a 32 bit quantity
 typedef uint32_t word;
@@ -32,27 +33,14 @@ struct Block {
 word * generateT();
 struct Block * readFileAsBlocks(char *filePath);
 void printWordBits(word w);
+void printBlocks(struct Block *);
 
 int main() {
     // entry point of the program
     word *T = generateT();
 
     struct Block *M = readFileAsBlocks("md5.c");
-    struct Block *currBlock = M;
-    word *words = currBlock->words;
-    int blockCounter = 0;
-
-    while (currBlock != NULL) {
-        printf("BLOCK: %d\n", blockCounter++);
-
-        for (int i = 0; i < 16; i++) {
-            printWordBits(words[i]);
-        }
-
-        currBlock = currBlock->next;
-        words = currBlock->words;
-    }
-    printf("\n");
+    printBlocks(M);
 
     return 0;
 }
@@ -80,7 +68,7 @@ struct Block * readFileAsBlocks(char *filePath) {
     word *currWords;
     int currWord;
     int byteIndex;
-    int isFirstBlock = 0;
+    bool isFirstBlock = true;
 
     FILE *filePtr = fopen(filePath, "rb");
 
@@ -104,14 +92,14 @@ struct Block * readFileAsBlocks(char *filePath) {
         
         if (isFirstBlock) {
             // first block already allocated
-            isFirstBlock = 1;
+            isFirstBlock = false;
         }
         else {
             // allocate memory for another block and move pointer along
             currBlock->next = (struct Block*)malloc(sizeof(struct Block));
             currBlock = currBlock->next;
-            currWords = currBlock->words;
         }
+        currWords = currBlock->words;
 
         for (int i = 0; i < bytesRead; i++) {
             // find current word in buffer
@@ -120,6 +108,7 @@ struct Block * readFileAsBlocks(char *filePath) {
             // combine byte into the current word (little-endian, as per the RFC)
             byteIndex = 3 - (i % 4);
             currWord = currWord | (buffer[i] << (byteIndex * 8));
+            currWords[i / 4] = currWord;
         }
 
         bytesRemaining -= bytesRead;
@@ -140,4 +129,23 @@ void printWordBits(word w) {
     }
 
     printf("\n");
+}
+
+void printBlocks(struct Block *M) {
+    struct Block *currBlock = M;
+    word *words = currBlock->words;
+    int blockCounter = 0;
+
+    while (currBlock != NULL) {
+        printf("BLOCK: %d\n", blockCounter++);
+
+        for (int i = 0; i < 16; i++) {
+            printWordBits(words[i]);
+        }
+
+        currBlock = currBlock->next;
+        words = currBlock->words;
+
+        printf("\n");
+    }
 }
