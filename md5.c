@@ -9,7 +9,10 @@
 typedef uint32_t word;
 
 // integer constants
+// 2^32 (constant from RFC to generate T)
 #define T_MULTIPLIER 4294967296
+// 1 followed by 7 zeroes in binary
+#define FIRST_PADDING_BYTE 128;
 
 // function-like macros
 #define MIN(a, b) (a < b ? a : b)
@@ -112,6 +115,29 @@ struct Block * readFileAsBlocks(char *filePath) {
         }
 
         bytesRemaining -= bytesRead;
+    }
+
+    // -= PADDING =-
+    int lastBlockBytes = bytesRead % 16;
+    // pad after the last byte
+    int paddingIndex = lastBlockBytes;
+    // no padding needed if input length was congruent to 448 mod 512 bits
+    if (lastBlockBytes != 14) {
+        if (lastBlockBytes < 14) {
+            // enough space in this block to pad and fit the length of the input
+            // start padding with a 1
+            currWords[paddingIndex++] = FIRST_PADDING_BYTE;
+
+            // pad out with 0s
+            for ( ; paddingIndex <= 14; paddingIndex++) {
+                currWords[paddingIndex] = 0;
+            }
+        }
+        else {
+            // not enough space in this block; pad and put length of input on next block
+
+            // CONTINUE HERE
+        }
     }
 
     // close file
