@@ -11,6 +11,8 @@ typedef uint32_t word;
 #define T_MULTIPLIER 4294967296
 
 // function-like macros
+#define MIN(a, b) (a < b ? a : b)
+
 #define F(x, y, z) (x & y | (~x & z))
 #define G(x, y, z) (x & y | (y & ~z)
 #define H(x, y, z) (x ^ y ^ z)
@@ -26,9 +28,10 @@ struct Block {
     struct Block* next;
 };
 
-// function declarations (not sure if I actually need these?)
+// function declarations
 void printWordBits(word w);
 word * generateT();
+struct Block * readFileAsBlocks(char *filePath);
 
 int main() {
     // entry point of the program
@@ -55,7 +58,7 @@ int main() {
 
     word *T = generateT();
 
-    struct Block *M = readFileAsBlocks(".gitignore");
+    struct Block *M = readFileAsBlocks("md5.c");
 
     return 0;
 }
@@ -84,6 +87,18 @@ word * generateT() {
 }
 
 struct Block * readFileAsBlocks(char *filePath) {
+    struct Block* head = (struct Block*)malloc(sizeof(struct Block));
+    struct Block* currBlock = head;
+    
+    // Block sized buffer of bytes
+    char buffer[64];
+    int bytesRead;
+    int wordIndex;
+    word *currWords;
+    int currWord;
+    int byteIndex;
+    int isFirstBlock = 0;
+
     FILE *filePtr = fopen(filePath, "rb");
 
     if (!filePtr) {
@@ -91,15 +106,45 @@ struct Block * readFileAsBlocks(char *filePath) {
         exit(1);
     }
 
-    struct Block* head = (struct Block*)malloc(sizeof(struct Block));
-
-    // reading binary files: https://stackoverflow.com/questions/28269995/c-read-file-byte-by-byte-using-fread
+    // reading binary files: https://stackoverflow.com/questions/22059189/read-a-file-as-byte-array
     // seek to end of the file to find it's length
     fseek(filePtr, 0, SEEK_END);          
-    long fileLen = ftell(filePtr);            
+    long bytesRemaining = ftell(filePtr);            
     rewind(filePtr);
 
-    // read file and build word blocks here
+    printf("File is %ld bytes long.\n", bytesRemaining);
 
-    printf("File is %d bytes long.\n", fileLen);
+    while (bytesRemaining > 0) {
+        // read 64 bytes, or however many are left
+        bytesRead = MIN(bytesRemaining, 64);
+        fread(buffer, bytesRead, 1, filePtr);
+        
+        if (isFirstBlock) {
+            // first block already allocated
+            isFirstBlock = 1;
+        }
+        else {
+            // allocate memory for another block and move pointer along
+            currBlock->next = (struct Block*)malloc(sizeof(struct Block));
+            currBlock = currBlock->next;
+            currWords = currBlock->words;
+        }
+
+        for (int i = 0; i < bytesRead; i++) {
+            // find current word in buffer
+            wordIndex = i / 4;
+            currWord = currWords[i / 4];
+            // combine byte into the current word (little-endian, as per the RFC)
+            byteIndex = 3 - (i % 4);
+            currWord = currWord | (buffer[i] << (byteIndex * 8));
+        }
+
+        bytesRemaining -= bytesRead;
+    }
+
+    // close file
+    fclose(filePtr);
+
+    // return head of linkedlist of Blocks
+    return head;
 }
