@@ -28,20 +28,20 @@ typedef uint32_t word;
 
 // function declarations
 word * generateT();
-struct Blocks readFileAsBlocks(char *filePath);
+struct Blocks * readFileAsBlocks(char *filePath);
 void printWordBits(word w);
 void printBlocks(struct Blocks *);
 
-struct Blocks {
+typedef struct Blocks {
     word **words;
     int numBlocks;
-};
+} Blocks;
 
 int main() {
     // entry point of the program
     word *T = generateT();
 
-    struct Block *M = readFileAsBlocks("md5.c");
+    struct Blocks *M = readFileAsBlocks("md5.c");
     printBlocks(M);
 
     return 0;
@@ -59,7 +59,7 @@ word * generateT() {
     return T;
 }
 
-struct Blocks readFileAsBlocks(char *filePath) {
+struct Blocks * readFileAsBlocks(char *filePath) {
     // Block sized buffer of bytes
     char buffer[64];
     int bytesRead;
@@ -73,7 +73,7 @@ struct Blocks readFileAsBlocks(char *filePath) {
         exit(1);
     }
 
-    // reading binary files: https://stackoverflow.com/questions/22059189/read-a-file-as-byte-array
+    // reading binary files: https://stackoverflow.com/a/22059317
     // seek to end of the file to find it's length
     fseek(filePtr, 0, SEEK_END);
     // TODO: typedef this, its silly
@@ -89,13 +89,17 @@ struct Blocks readFileAsBlocks(char *filePath) {
     int numBlocks = 1 + (totalBytes / 16) + (totalBytes % 16 > 13 ? 1 : 0);
 
     // allocate the memory needed for the 2D array M
+    // https://stackoverflow.com/a/14088911
     word **M = (word **)malloc(numBlocks * sizeof(word *));
 
-    for (int i = 0; i < numBlocks; i) {
+    for (int i = 0; i < numBlocks; i++) {
         M[i] = (int *)malloc(16 * sizeof(word));
     }
 
-    struct Block* blocks = (struct Block*)malloc(sizeof(struct Blocks));
+    // initialise blocks struct containing the 2D words array and number of blocks
+    Blocks *blocks = (Blocks *)malloc(sizeof(Blocks));
+    blocks->words = M;
+    blocks->numBlocks = numBlocks;
 
     while (bytesRemaining > 0) {
         // read 64 bytes, or however many are left
@@ -133,8 +137,8 @@ struct Blocks readFileAsBlocks(char *filePath) {
     // close file
     fclose(filePtr);
 
-    // return head of linkedlist of Blocks
-    return M;
+    // return pointer to blocks
+    return blocks;
 }
 
 void printWordBits(word w) {
