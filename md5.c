@@ -82,11 +82,14 @@ struct Block * readFileAsBlocks(char *filePath) {
 
     // reading binary files: https://stackoverflow.com/questions/22059189/read-a-file-as-byte-array
     // seek to end of the file to find it's length
-    fseek(filePtr, 0, SEEK_END);          
-    long bytesRemaining = ftell(filePtr);            
+    fseek(filePtr, 0, SEEK_END);
+    // TODO: typedef this, its silly
+    unsigned long long bytesRemaining = ftell(filePtr);
+    unsigned long long totalBytes = bytesRemaining;
+    unsigned long long totalBits = totalBytes * 8;
     rewind(filePtr);
 
-    printf("File is %ld bytes long.\n", bytesRemaining);
+    printf("File is %lld bytes long.\n", bytesRemaining);
 
     while (bytesRemaining > 0) {
         // read 64 bytes, or however many are left
@@ -121,23 +124,62 @@ struct Block * readFileAsBlocks(char *filePath) {
     int lastBlockBytes = bytesRead % 16;
     // pad after the last byte
     int paddingIndex = lastBlockBytes;
-    // no padding needed if input length was congruent to 448 mod 512 bits
-    if (lastBlockBytes != 14) {
-        if (lastBlockBytes < 14) {
-            // enough space in this block to pad and fit the length of the input
-            // start padding with a 1
-            currWords[paddingIndex++] = FIRST_PADDING_BYTE;
 
-            // pad out with 0s
-            for ( ; paddingIndex <= 14; paddingIndex++) {
-                currWords[paddingIndex] = 0;
-            }
-        }
-        else {
-            // not enough space in this block; pad and put length of input on next block
+    struct Block* nextBlock = NULL;
+    word *nextWords;
 
-            // CONTINUE HERE
+    if (lastBlockBytes == 0) {
+        // not enough space in this block; allocate memory for another block
+        nextBlock = (struct Block*)malloc(sizeof(struct Block));
+        currBlock->next = nextBlock;
+        nextWords = nextBlock->words;
+
+        nextWords[0] = FIRST_PADDING_BYTE;
+
+        // pad out with 0s until message length is congruent to 448 mod 512 bits
+        for ( ; paddingIndex <= 14; paddingIndex++) {
+            nextWords[paddingIndex] = 0;
         }
+    }
+    else if (lastBlockBytes < 14) {
+        // enough space in this block, no need to create another
+        currWords[paddingIndex++] = FIRST_PADDING_BYTE;
+
+        for ( ; paddingIndex <= 14; paddingIndex++) {
+            currWords[paddingIndex] = 0;
+        }
+    }
+    else {
+        // padding needed across two blocks...
+        currWords[paddingIndex++] = FIRST_PADDING_BYTE;
+
+        for ( ; paddingIndex < 16; paddingIndex++) {
+            currWords[paddingIndex] = 0;
+        }
+
+        // not enough space in this block; allocate memory for another block
+        nextBlock = (struct Block*)malloc(sizeof(struct Block));
+        currBlock->next = nextBlock;
+        nextWords = nextBlock->words;
+
+        // pad out with 0s until message length is congruent to 448 mod 512 bits
+        for ( ; paddingIndex <= 14; paddingIndex++) {
+            nextWords[paddingIndex] = 0;
+        }
+    }
+
+
+    if (nextBlock == NULL) {
+        // append input length (most significant byte first?)
+        // TODO: this probably isn't right. 
+        currWords[14] = totalBits >> 16;
+        currWords[15] = totalBits & 0xffff;
+    }
+    else {
+        // append input length (most significant byte first?)
+        // TODO: this probably isn't right. 
+        nextWords[14] = totalBits >> 16;
+        nextWords[15] = totalBits & 0xffff;
     }
 
     // close file
