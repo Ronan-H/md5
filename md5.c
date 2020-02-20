@@ -60,8 +60,6 @@ word * generateT() {
 }
 
 struct Blocks * readFileAsBlocks(char *filePath) {
-    // Block sized buffer of bytes
-    char buffer[64];
     int bytesRead;
     int byteIndex;
     word currWord = 0;
@@ -84,6 +82,10 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     printf("File is %lld bytes long.\n", bytesRemaining);
 
+    // read the entire file into a char buffer
+    char buffer[totalBytes];
+    fread(buffer, totalBytes, 1, filePtr);
+
     // compute the number of blocks needed to store the data, including the padding and input length bytes
     // (at least 1 block regardless of input length, +1 block for every 16 bytes, +1 extra if needed to fit padding and input length bytes)
     int numBlocks = 1 + (totalBytes / 16) + (totalBytes % 16 > 13 ? 1 : 0);
@@ -101,26 +103,17 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     blocks->words = M;
     blocks->numBlocks = numBlocks;
 
-    while (bytesRemaining > 0) {
-        // read 64 bytes, or however many are left
-        bytesRead = MIN(bytesRemaining, 64);
-        fread(buffer, bytesRead, 1, filePtr);
-
-        for (int i = 0; i < bytesRead; i++) {
-            // find current word in M
-            currWord = M[i / 16][i % 16];
-            // combine byte into the current word (little-endian, as per the RFC)
-            byteIndex = 3 - (i % 4);
-            currWord = currWord | (buffer[i] << (byteIndex * 8));
-            M[i / 16][i % 16] = currWord;
-        }
-
-        bytesRemaining -= bytesRead;
+    for (int i = 0; i < totalBytes; i++) {
+        currWord = M[i / 16][i % 16];
+        // combine byte into the current word (little-endian, as per the RFC)
+        byteIndex = 3 - (i % 4);
+        currWord = currWord | (buffer[i] << (byteIndex * 8));
+        M[i / 16][i % 16] = currWord;
     }
 
     // -= PADDING =-
     // pad after the last byte
-    int paddingIndex = bytesRead;
+    int paddingIndex = totalBytes;
 
     M[paddingIndex / 16][paddingIndex % 16] = FIRST_PADDING_BYTE;
 
