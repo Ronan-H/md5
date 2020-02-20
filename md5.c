@@ -62,7 +62,7 @@ word * generateT() {
 struct Blocks * readFileAsBlocks(char *filePath) {
     int bytesRead;
     int byteIndex;
-    word currWord = 0;
+    word currWord;
 
     FILE *filePtr = fopen(filePath, "rb");
 
@@ -103,12 +103,17 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     blocks->words = M;
     blocks->numBlocks = numBlocks;
 
+    byteIndex = 3;
+    currWord = 0;
     for (int i = 0; i < totalBytes; i++) {
-        currWord = M[i / 16][i % 16];
         // combine byte into the current word (little-endian, as per the RFC)
-        byteIndex = 3 - (i % 4);
-        currWord = currWord | (buffer[i] << (byteIndex * 8));
-        M[i / 16][i % 16] = currWord;
+        currWord = currWord | (buffer[i] << (byteIndex-- * 8));
+
+        if (byteIndex == -1 || i == totalBytes - 1) {
+            M[i / 16][i % 16] = currWord;
+            currWord = 0;
+            byteIndex = 3;
+        }
     }
 
     // -= PADDING =-
