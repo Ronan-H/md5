@@ -26,12 +26,6 @@ typedef uint32_t word;
 // (shift left and add bits that wrapped around)
 #define ROTL(x, s) ((x << s) + (x >> (32 - s)))
 
-// structs
-struct Block {
-    word words[16];
-    struct Block* next;
-};
-
 // function declarations
 word * generateT();
 struct Block * readFileAsBlocks(char *filePath);
@@ -61,9 +55,6 @@ word * generateT() {
 }
 
 struct Block * readFileAsBlocks(char *filePath) {
-    struct Block* head = (struct Block*)malloc(sizeof(struct Block));
-    struct Block* currBlock = head;
-    
     // Block sized buffer of bytes
     char buffer[64];
     int bytesRead;
@@ -90,6 +81,10 @@ struct Block * readFileAsBlocks(char *filePath) {
     rewind(filePtr);
 
     printf("File is %lld bytes long.\n", bytesRemaining);
+
+    // compute the number of blocks needed to store the data, including the padding and input length bytes
+    // (at least 1 block regardless of input length, +1 block for every 16 bytes, +1 extra if needed to fit padding and input length bytes)
+    int numBlocks = 1 + (totalBytes / 16) + (totalBytes % 16 > 13 ? 1 : 0);
 
     while (bytesRemaining > 0) {
         // read 64 bytes, or however many are left
