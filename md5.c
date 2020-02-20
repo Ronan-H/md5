@@ -28,9 +28,14 @@ typedef uint32_t word;
 
 // function declarations
 word * generateT();
-struct Block * readFileAsBlocks(char *filePath);
+struct Blocks readFileAsBlocks(char *filePath);
 void printWordBits(word w);
-void printBlocks(struct Block *);
+void printBlocks(struct Blocks *);
+
+struct Blocks {
+    word **words;
+    int numBlocks;
+};
 
 int main() {
     // entry point of the program
@@ -54,15 +59,12 @@ word * generateT() {
     return T;
 }
 
-struct Block * readFileAsBlocks(char *filePath) {
+struct Blocks readFileAsBlocks(char *filePath) {
     // Block sized buffer of bytes
     char buffer[64];
     int bytesRead;
-    int wordIndex;
-    word *currWords;
-    int currWord;
     int byteIndex;
-    bool isFirstBlock = true;
+    word currWord = 0;
 
     FILE *filePtr = fopen(filePath, "rb");
 
@@ -86,102 +88,53 @@ struct Block * readFileAsBlocks(char *filePath) {
     // (at least 1 block regardless of input length, +1 block for every 16 bytes, +1 extra if needed to fit padding and input length bytes)
     int numBlocks = 1 + (totalBytes / 16) + (totalBytes % 16 > 13 ? 1 : 0);
 
+    // allocate the memory needed for the 2D array M
+    word **M = (word **)malloc(numBlocks * sizeof(word *));
+
+    for (int i = 0; i < numBlocks; i) {
+        M[i] = (int *)malloc(16 * sizeof(word));
+    }
+
+    struct Block* blocks = (struct Block*)malloc(sizeof(struct Blocks));
+
     while (bytesRemaining > 0) {
         // read 64 bytes, or however many are left
         bytesRead = MIN(bytesRemaining, 64);
         fread(buffer, bytesRead, 1, filePtr);
-        
-        if (isFirstBlock) {
-            // first block already allocated
-            isFirstBlock = false;
-        }
-        else {
-            // allocate memory for another block and move pointer along
-            currBlock->next = (struct Block*)malloc(sizeof(struct Block));
-            currBlock = currBlock->next;
-        }
-        currWords = currBlock->words;
 
         for (int i = 0; i < bytesRead; i++) {
-            // find current word in buffer
-            wordIndex = i / 4;
-            currWord = currWords[i / 4];
+            // find current word in M
+            currWord = M[i / 16][i % 16];
             // combine byte into the current word (little-endian, as per the RFC)
             byteIndex = 3 - (i % 4);
             currWord = currWord | (buffer[i] << (byteIndex * 8));
-            currWords[i / 4] = currWord;
+            M[i / 16][i % 16] = currWord;
         }
 
         bytesRemaining -= bytesRead;
     }
 
     // -= PADDING =-
-    int lastBlockBytes = bytesRead % 16;
     // pad after the last byte
-    int paddingIndex = lastBlockBytes;
+    int paddingIndex = bytesRead;
 
-    struct Block* nextBlock = NULL;
-    word *nextWords;
+    M[paddingIndex / 16][paddingIndex % 16] = FIRST_PADDING_BYTE;
 
-    if (lastBlockBytes == 0) {
-        // not enough space in this block; allocate memory for another block
-        nextBlock = (struct Block*)malloc(sizeof(struct Block));
-        currBlock->next = nextBlock;
-        nextWords = nextBlock->words;
-
-        nextWords[0] = FIRST_PADDING_BYTE;
-
-        // pad out with 0s until message length is congruent to 448 mod 512 bits
-        for ( ; paddingIndex <= 14; paddingIndex++) {
-            nextWords[paddingIndex] = 0;
-        }
-    }
-    else if (lastBlockBytes < 14) {
-        // enough space in this block, no need to create another
-        currWords[paddingIndex++] = FIRST_PADDING_BYTE;
-
-        for ( ; paddingIndex <= 14; paddingIndex++) {
-            currWords[paddingIndex] = 0;
-        }
-    }
-    else {
-        // padding needed across two blocks...
-        currWords[paddingIndex++] = FIRST_PADDING_BYTE;
-
-        for ( ; paddingIndex < 16; paddingIndex++) {
-            currWords[paddingIndex] = 0;
-        }
-
-        // not enough space in this block; allocate memory for another block
-        nextBlock = (struct Block*)malloc(sizeof(struct Block));
-        currBlock->next = nextBlock;
-        nextWords = nextBlock->words;
-
-        // pad out with 0s until message length is congruent to 448 mod 512 bits
-        for ( ; paddingIndex <= 14; paddingIndex++) {
-            nextWords[paddingIndex] = 0;
-        }
+    while (++paddingIndex % 16 != 14) {
+        M[paddingIndex / 16][paddingIndex % 16] = 0;
     }
 
-
-    if (nextBlock == NULL) {
-        // append input length (most significant byte first?)
-        // TODO: this probably isn't right. 
-        currWords[14] = totalBits >> 16;
-        currWords[15] = totalBits & 0xffff;
-    }
-    else {
-        // append input length (most significant byte first?)
-        // TODO: this probably isn't right. 
-        nextWords[14] = totalBits >> 16;
-        nextWords[15] = totalBits & 0xffff;
-    }
+    // append input length (most significant byte first?)
+    // TODO: this probably isn't right. 
+    M[paddingIndex / 16][paddingIndex % 16] = totalBits >> 16;
+    paddingIndex++;
+    M[paddingIndex / 16][paddingIndex % 16] = totalBits & 0xffff;
 
     // close file
     fclose(filePtr);
 
     // return head of linkedlist of Blocks
-    return head;
+    return M;
 }
 
 void printWordBits(word w) {
@@ -194,20 +147,16 @@ void printWordBits(word w) {
     printf("\n");
 }
 
-void printBlocks(struct Block *M) {
-    struct Block *currBlock = M;
-    word *words = currBlock->words;
-    int blockCounter = 0;
+void printBlocks(struct Blocks *M) {
+    word **words = M->words;
+    int numBlocks = M->numBlocks;
 
-    while (currBlock != NULL) {
-        printf("BLOCK: %d\n", blockCounter++);
+    for (int i = 0; i < numBlocks; i++) {
+        printf("BLOCK: %d\n", i++);
 
-        for (int i = 0; i < 16; i++) {
-            printWordBits(words[i]);
+        for (int j = 0; j < 16; j++) {
+            printWordBits(words[i][j]);
         }
-
-        currBlock = currBlock->next;
-        words = currBlock->words;
 
         printf("\n");
     }
