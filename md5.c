@@ -23,7 +23,7 @@ typedef unsigned char ubyte;
 
 // auxiliary functions
 #define F(x, y, z) (x & y | (~x & z))
-#define G(x, y, z) (x & y | (y & ~z)
+#define G(x, y, z) (x & y | (y & ~z))
 #define H(x, y, z) (x ^ y ^ z)
 #define I(x, y, z) (y ^ (x | ~z))
 
@@ -116,6 +116,25 @@ int main() {
         R1_OP(B, C, D, A, X[15], 22, T[16]);
 
         // Round 2
+        R2_OP(A, B, C, D, X[1], 5, T[17]);
+        R2_OP(D, A, B, C, X[6], 9, T[18]);
+        R2_OP(C, D, A, B, X[11], 14, T[19]);
+        R2_OP(B, C, D, A, X[0], 20, T[20]);
+
+        R2_OP(A, B, C, D, X[5], 5, T[21]);
+        R2_OP(D, A, B, C, X[10], 9, T[22]);
+        R2_OP(C, D, A, B, X[15], 14, T[23]);
+        R2_OP(B, C, D, A, X[4], 20, T[24]);
+
+        R2_OP(A, B, C, D, X[9], 5, T[25]);
+        R2_OP(D, A, B, C, X[14], 9, T[26]);
+        R2_OP(C, D, A, B, X[3], 14, T[27]);
+        R2_OP(B, C, D, A, X[8], 20, T[28]);
+
+        R2_OP(A, B, C, D, X[13], 5, T[29]);
+        R2_OP(D, A, B, C, X[2], 9, T[30]);
+        R2_OP(C, D, A, B, X[7], 14, T[31]);
+        R2_OP(B, C, D, A, X[12], 20, T[32]);
 
         // Round 3
 
