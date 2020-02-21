@@ -42,7 +42,7 @@ int main() {
     word *T = generateT();
 
     // gitignore file
-    // struct Blocks *M = readFileAsBlocks("./.gitignore");
+    struct Blocks *M = readFileAsBlocks("./.gitignore");
 
     // test files for edge cases
     // empty file
@@ -52,14 +52,16 @@ int main() {
     // all bytes (including padding and input length) should fit in two blocks
     //struct Blocks *M = readFileAsBlocks("./input/70_bytes.txt");
     // all bytes (including padding and input length) should just about fit in two blocks
-    struct Blocks *M = readFileAsBlocks("./input/119_bytes.txt");
+    //struct Blocks *M = readFileAsBlocks("./input/119_bytes.txt");
     // padding space requirements forces creation of an extra block
     //struct Blocks *M = readFileAsBlocks("./input/120_bytes.txt");
     // same as above
     //struct Blocks *M = readFileAsBlocks("./input/121_bytes.txt");
+    // input fills exactly 2 blocks, 3rd block is entirely padding and input length
+    //struct Blocks *M = readFileAsBlocks("./input/128_bytes.txt");
 
-    // large file
-    // struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+    // large file (~90 MB)
+    //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     printBlocks(M);
 
