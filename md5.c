@@ -87,8 +87,9 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     fread(buffer, totalBytes, 1, filePtr);
 
     // compute the number of blocks needed to store the data, including the padding and input length bytes
-    // (at least 1 block regardless of input length, +1 block for every 16 bytes, +1 extra if needed to fit padding and input length bytes)
-    int numBlocks = 1 + (totalBytes / 16) + (totalBytes % 16 > 13 ? 1 : 0);
+    // (at least 1 block regardless of input length, +1 block for every 64 bytes, +1 extra if needed to fit padding and input length bytes)
+    int numBlocks = 1 + (totalBytes / 64) + (totalBytes % 64 > 13 ? 1 : 0);
+    printf("Num blocks: %d\n", numBlocks);
 
     // allocate the memory needed for the 2D array M
     // https://stackoverflow.com/a/14088911
@@ -110,15 +111,16 @@ struct Blocks * readFileAsBlocks(char *filePath) {
         currWord = currWord | (buffer[i] << (byteIndex-- * 8));
 
         if (byteIndex == -1 || i == totalBytes - 1) {
-            M[i / 16][i % 16] = currWord;
+            M[i / 64][(i % 64) / 4] = currWord;
             currWord = 0;
             byteIndex = 3;
         }
     }
-
+    
     // -= PADDING =-
     // pad after the last byte
-    int paddingIndex = totalBytes;
+    int paddingIndex = totalBytes / 4;
+    int lastBlockIndex = numBlocks - 1;
 
     M[paddingIndex / 16][paddingIndex % 16] = FIRST_PADDING_BYTE;
 
@@ -127,10 +129,9 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     }
 
     // append input length (most significant byte first?)
-    // TODO: this probably isn't right. 
-    M[paddingIndex / 16][paddingIndex % 16] = totalBits >> 16;
-    paddingIndex++;
-    M[paddingIndex / 16][paddingIndex % 16] = totalBits & 0xffff;
+    // TODO: this probably isn't right.
+    M[lastBlockIndex][14] = totalBits >> 16;
+    M[lastBlockIndex][15] = totalBits & 0xffff;
 
     // close file
     fclose(filePtr);
