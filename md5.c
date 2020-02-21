@@ -41,7 +41,7 @@ int main() {
     // entry point of the program
     word *T = generateT();
 
-    struct Blocks *M = readFileAsBlocks("md5.c");
+    struct Blocks *M = readFileAsBlocks("./.gitignore");
     printBlocks(M);
 
     return 0;
@@ -75,20 +75,38 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     // seek to end of the file to find it's length
     fseek(filePtr, 0, SEEK_END);
     // TODO: typedef this, its silly
-    unsigned long long bytesRemaining = ftell(filePtr);
-    unsigned long long totalBytes = bytesRemaining;
-    unsigned long long totalBits = totalBytes * 8;
+    unsigned long long fileBytes = ftell(filePtr);
+    // compute exact number of padding bytes needed
+    unsigned long long paddingBytes = 65 - ((fileBytes + 8) % 64 + 1);
+    unsigned long long totalBytes = fileBytes + paddingBytes + 8;
+    printf("total bytes: %lld\n", totalBytes);
+    unsigned long long totalBits = fileBytes * 8;
     rewind(filePtr);
 
-    printf("File is %lld bytes long.\n", bytesRemaining);
+    printf("File is %lld bytes long.\n", fileBytes);
 
     // read the entire file into a char buffer
     char buffer[totalBytes];
-    fread(buffer, totalBytes, 1, filePtr);
+    fread(buffer, fileBytes, 1, filePtr);
+
+    // start padding with a 1
+    int paddingIndex = fileBytes;
+    buffer[paddingIndex++] = FIRST_PADDING_BYTE;
+
+    // rest of the padding is 0s
+    for (; paddingIndex < totalBytes - 2; paddingIndex++) {
+        buffer[paddingIndex] = 0;
+    }
+
+    // append input length (most significant byte first?)
+    // TODO: this probably isn't right.
+    printf("Total bits: %lld\n", totalBits);
+    buffer[totalBytes - 2] = totalBits >> 16;
+    buffer[totalBytes - 1] = totalBits & 0xffff;
 
     // compute the number of blocks needed to store the data, including the padding and input length bytes
     // (at least 1 block regardless of input length, +1 block for every 64 bytes, +1 extra if needed to fit padding and input length bytes)
-    int numBlocks = 1 + (totalBytes / 64) + (totalBytes % 64 > 13 ? 1 : 0);
+    int numBlocks = totalBytes / 64;
     printf("Num blocks: %d\n", numBlocks);
 
     // allocate the memory needed for the 2D array M
@@ -116,22 +134,6 @@ struct Blocks * readFileAsBlocks(char *filePath) {
             byteIndex = 3;
         }
     }
-    
-    // -= PADDING =-
-    // pad after the last byte
-    int paddingIndex = totalBytes / 4;
-    int lastBlockIndex = numBlocks - 1;
-
-    M[paddingIndex / 16][paddingIndex % 16] = FIRST_PADDING_BYTE;
-
-    while (++paddingIndex % 16 != 14) {
-        M[paddingIndex / 16][paddingIndex % 16] = 0;
-    }
-
-    // append input length (most significant byte first?)
-    // TODO: this probably isn't right.
-    M[lastBlockIndex][14] = totalBits >> 16;
-    M[lastBlockIndex][15] = totalBits & 0xffff;
 
     // close file
     fclose(filePtr);
@@ -155,7 +157,7 @@ void printBlocks(struct Blocks *M) {
     int numBlocks = M->numBlocks;
 
     for (int i = 0; i < numBlocks; i++) {
-        printf("BLOCK: %d\n", i++);
+        printf("BLOCK: %d\n", i);
 
         for (int j = 0; j < 16; j++) {
             printWordBits(words[i][j]);
