@@ -137,6 +137,25 @@ int main() {
         R2_OP(B, C, D, A, X[12], 20, T[32]);
 
         // Round 3
+        R2_OP(A, B, C, D, X[5], 4, T[33]);
+        R2_OP(D, A, B, C, X[8], 11, T[34]);
+        R2_OP(C, D, A, B, X[11], 16, T[35]);
+        R2_OP(B, C, D, A, X[14], 23, T[36]);
+
+        R2_OP(A, B, C, D, X[1], 4, T[37]);
+        R2_OP(D, A, B, C, X[4], 11, T[38]);
+        R2_OP(C, D, A, B, X[7], 16, T[39]);
+        R2_OP(B, C, D, A, X[10], 23, T[40]);
+
+        R2_OP(A, B, C, D, X[13], 4, T[41]);
+        R2_OP(D, A, B, C, X[0], 11, T[42]);
+        R2_OP(C, D, A, B, X[3], 16, T[43]);
+        R2_OP(B, C, D, A, X[6], 23, T[44]);
+
+        R2_OP(A, B, C, D, X[9], 4, T[45]);
+        R2_OP(D, A, B, C, X[12], 11, T[46]);
+        R2_OP(C, D, A, B, X[15], 16, T[47]);
+        R2_OP(B, C, D, A, X[2], 23, T[48]);
 
         // Round 4
 
