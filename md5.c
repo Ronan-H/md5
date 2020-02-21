@@ -15,15 +15,15 @@ typedef unsigned char ubyte;
 // integer constants
 // 2^32 (constant from RFC to generate T)
 #define T_MULTIPLIER 4294967296
-// 1 followed by 7 zeroes in binary
-#define FIRST_PADDING_BYTE 128;
+// single padding bit
+#define FIRST_PADDING_BYTE 1;
 
 // function-like macros
 #define MIN(a, b) (a < b ? a : b)
 
 // auxiliary functions
 #define F(x, y, z) (x & y | (~x & z))
-#define G(x, y, z) (x & y | (y & ~z))
+#define G(x, y, z) (x & z | (y & ~z))
 #define H(x, y, z) (x ^ y ^ z)
 #define I(x, y, z) (y ^ (x | ~z))
 
@@ -32,10 +32,10 @@ typedef unsigned char ubyte;
 #define ROTL(x, s) ((x << s) + (x >> (32 - s)))
 
 // MD5 round functions
-#define R1_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + F(b, c, d) + xk + ti), s))
-#define R2_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + G(b, c, d) + xk + ti), s))
-#define R3_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + H(b, c, d) + xk + ti), s))
-#define R4_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
+#define R1_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + F(b, c, d) + xk + ti), s))
+#define R2_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + G(b, c, d) + xk + ti), s))
+#define R3_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + H(b, c, d) + xk + ti), s))
+#define R4_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
 // function declarations
 word * generateT();
@@ -80,10 +80,10 @@ int main() {
     printBlocks(blocks);
 
     // initialise MD buffer
-    word A = 0x01234567;
-    word B = 0x89abcdef;
-    word C = 0xfedcba98;
-    word D = 0x76543218;
+    word A = 0x67452301;
+    word B = 0xefcdab89;
+    word C = 0x98badcfe;
+    word D = 0x10325476;
 
     word AA, BB, CC, DD;
 
@@ -273,17 +273,17 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // now convert the buffer array of bytes into a series of blocks,
     // each containing 16x 32 bit words (512 bits total)
-    byteIndex = 3;
+    byteIndex = 0;
     currWord = 0;
     for (int i = 0; i < totalBytes; i++) {
         // combine byte into the current word (little-endian, as per the RFC)
-        currWord = currWord | (buffer[i] << (byteIndex-- * 8));
+        currWord = currWord | (buffer[i] << (byteIndex++ * 8));
 
-        if (byteIndex == -1 || i == totalBytes - 1) {
+        if (byteIndex == 4 || i == totalBytes - 1) {
             // write currWord to the next index of the current block
             M[i / 64][(i % 64) / 4] = currWord;
             currWord = 0;
-            byteIndex = 3;
+            byteIndex = 0;
         }
     }
 
