@@ -53,7 +53,7 @@ int main() {
     word *T = generateT();
 
     // gitignore file
-    //struct Blocks *blocks = readFileAsBlocks("./.gitignore");
+    struct Blocks *blocks = readFileAsBlocks("./.gitignore");
 
     // test files for edge cases
     // empty file
@@ -72,7 +72,7 @@ int main() {
     //struct Blocks *blocks = readFileAsBlocks("./input/128_bytes.txt");
 
     // large file (~90 MB)
-    struct Blocks *blocks = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+    //struct Blocks *blocks = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     int numBlocks = blocks->numBlocks;
     word **M = blocks->words;
@@ -222,7 +222,7 @@ word * generateT() {
 }
 
 struct Blocks * readFileAsBlocks(char *filePath) {
-    int bi;
+    int p;
     int shiftPlaces;
     word *currBlock;
     ull fileBytes;
@@ -245,6 +245,7 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     // compute exact number of padding bytes needed
     paddingBytes = 65 - ((fileBytes + 8) % 64 + 1);
     // total number of bytes needed for all blocks (a multiple of 64)
+    // (file bytes + padding bytes + input length bytes)
     totalBytes = fileBytes + paddingBytes + 8;
     totalBits = fileBytes * 8;
     rewind(filePtr);
@@ -254,23 +255,22 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     fread(buffer, fileBytes, 1, filePtr);
 
     // start padding with a 1
-    bi = fileBytes;
-    buffer[bi++] = FIRST_PADDING_BYTE;
+    p = fileBytes;
+    buffer[p++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
-    for (; bi < totalBytes - 8; bi++) {
-        buffer[bi] = 0;
+    for (; p < totalBytes - 8; p++) {
+        buffer[p] = 0;
     }
 
     // append 8 bytes describing input length (least significant byte first)
     shiftPlaces = 0;
-
-    for (; bi < totalBytes; bi++) {
-        buffer[bi] = (totalBits >> shiftPlaces) & 0xffff;
+    for (; p < totalBytes; p++) {
+        buffer[p] = (totalBits >> shiftPlaces) & 0xffff;
         shiftPlaces += 8;
     }
 
-    // compute the number of blocks needed to store all of the data, including the padding and input length bytes
+    // compute the number of blocks needed to store all of the buffer data
     int numBlocks = totalBytes / 64;
 
     // allocate the memory needed for the 2D array M
@@ -288,14 +288,14 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // now convert the buffer array of bytes into a series of blocks,
     // each containing 16x 32 bit words (512 bits total)
-    bi = 0;
+    p = 0;
     for (int i = 0; i < numBlocks; i++) {
         currBlock = M[i];
 
         for (int j = 0; j < 16; j++) {
             // combine 4 bytes into a word (little-endian, as per the RFC)
-            // and write the word to the block
-            currBlock[j] = buffer[bi++] | (buffer[bi++] << 8) | (buffer[bi++] << 16) | (buffer[bi++] << 24);
+            // and write the word to the block at the next index
+            currBlock[j] = buffer[p++] | (buffer[p++] << 8) | (buffer[p++] << 16) | (buffer[p++] << 24);
         }
     }
 
@@ -304,8 +304,6 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // free buffer memory
     free(buffer);
-
-    printf("Finished reading file.\n");
 
     // return pointer to blocks
     return blocks;
