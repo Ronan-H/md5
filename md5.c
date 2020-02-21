@@ -80,6 +80,7 @@ int main() {
     //printBlocks(blocks);
 
     // initialise MD buffer
+    // (low-byte order)
     word A = 0x67452301;
     word B = 0xefcdab89;
     word C = 0x98badcfe;
@@ -224,6 +225,9 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     int byteIndex;
     int shiftPlaces;
     word currWord;
+    word *currBlock;
+    int blockIndex;
+    int wordIndex;
     ull fileBytes;
     ull paddingBytes;
     ull totalBytes;
@@ -247,8 +251,6 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     totalBytes = fileBytes + paddingBytes + 8;
     totalBits = fileBytes * 8;
     rewind(filePtr);
-
-    // printf("File is %lld bytes long.\n", fileBytes);
 
     // read the entire file into a byte buffer
     ubyte *buffer = (ubyte *)malloc(totalBytes * sizeof(ubyte));
@@ -291,13 +293,23 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     // each containing 16x 32 bit words (512 bits total)
     byteIndex = 0;
     currWord = 0;
+    blockIndex = 0;
+    currBlock = M[blockIndex++];
+    wordIndex = 0;
     for (int i = 0; i < totalBytes; i++) {
         // combine byte into the current word (little-endian, as per the RFC)
-        currWord = currWord | (buffer[i] << (byteIndex++ * 8));
+        currWord = currWord | (buffer[i] << byteIndex);
+        byteIndex += 8;
 
-        if (byteIndex == 4 || i == totalBytes - 1) {
+        if (byteIndex == 32 || i == totalBytes - 1) {
             // write currWord to the next index of the current block
-            M[i / 64][(i % 64) / 4] = currWord;
+            currBlock[wordIndex++] = currWord;
+
+            if (wordIndex >= 16) {
+                currBlock = M[blockIndex++];
+                wordIndex = 0;
+            }
+
             currWord = 0;
             byteIndex = 0;
         }
@@ -308,6 +320,8 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // free buffer memory
     free(buffer);
+
+    printf("Finished reading file.\n");
 
     // return pointer to blocks
     return blocks;
