@@ -57,7 +57,7 @@ int main() {
 
     // test files for edge cases
     // empty file
-    struct Blocks *blocks = readFileAsBlocks("./input/0_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/0_bytes.txt");
     // all bytes (including padding and input length) should fit in one block
     //struct Blocks *blocks = readFileAsBlocks("./input/7_bytes.txt");
     // all bytes (including padding and input length) should fit in two blocks
@@ -72,12 +72,12 @@ int main() {
     //struct Blocks *blocks = readFileAsBlocks("./input/128_bytes.txt");
 
     // large file (~90 MB)
-    //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+    struct Blocks *blocks = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     int numBlocks = blocks->numBlocks;
     word **M = blocks->words;
 
-    printBlocks(blocks);
+    //printBlocks(blocks);
 
     // initialise MD buffer
     word A = 0x67452301;
@@ -186,7 +186,6 @@ int main() {
     }
 
     // print ABCD in low-byte order
-    printf("Hash: ");
     word state[4] = {A, B, C, D};
     word w;
     for (int i = 0; i < 4; i++) {
@@ -196,9 +195,15 @@ int main() {
             printf("%02x", w >> (j * 8) & 0xff);
         }
     }
-    printf("\n\n");
+    printf("\n");
 
-    // TODO free allocated memory before exit?
+    // free all dynamically allocated memory
+    for (int i = 0; i < numBlocks; i++) {
+        free(M[i]);
+    }
+
+    free(M);
+    free(blocks);
 
     return 0;
 }
@@ -243,7 +248,7 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     totalBits = fileBytes * 8;
     rewind(filePtr);
 
-    printf("File is %lld bytes long.\n", fileBytes);
+    // printf("File is %lld bytes long.\n", fileBytes);
 
     // read the entire file into a byte buffer
     ubyte *buffer = (ubyte *)malloc(totalBytes * sizeof(ubyte));
