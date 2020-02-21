@@ -32,10 +32,10 @@ typedef unsigned char ubyte;
 #define ROTL(x, s) ((x << s) + (x >> (32 - s)))
 
 // MD5 round functions
-#define R1_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + F(b, c, d) + xk + ti), s))
-#define R2_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + G(b, c, d) + xk + ti), s))
-#define R3_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + H(b, c, d) + xk + ti), s))
-#define R4_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + I(b, c, d) + xk + ti), s))
+#define R1_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + F(b, c, d) + xk + ti), s))
+#define R2_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + G(b, c, d) + xk + ti), s))
+#define R3_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + H(b, c, d) + xk + ti), s))
+#define R4_OP(a, b, c, d, xk, ti, s) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
 // function declarations
 word * generateT();
@@ -95,6 +95,25 @@ int main() {
         DD = D;
 
         // Round 1
+        R1_OP(A, B, C, D, X[0], 7, T[1]);
+        R1_OP(D, A, B, C, X[1], 12, T[2]);
+        R1_OP(C, D, A, B, X[2], 17, T[3]);
+        R1_OP(B, C, D, A, X[3], 22, T[4]);
+
+        R1_OP(A, B, C, D, X[4], 7, T[5]);
+        R1_OP(D, A, B, C, X[5], 12, T[6]);
+        R1_OP(C, D, A, B, X[6], 17, T[7]);
+        R1_OP(B, C, D, A, X[7], 22, T[8]);
+
+        R1_OP(A, B, C, D, X[8], 7, T[9]);
+        R1_OP(D, A, B, C, X[9], 12, T[10]);
+        R1_OP(C, D, A, B, X[10], 17, T[11]);
+        R1_OP(B, C, D, A, X[11], 22, T[12]);
+
+        R1_OP(A, B, C, D, X[12], 7, T[13]);
+        R1_OP(D, A, B, C, X[13], 12, T[14]);
+        R1_OP(C, D, A, B, X[14], 17, T[15]);
+        R1_OP(B, C, D, A, X[15], 22, T[16]);
 
         // Round 2
 
