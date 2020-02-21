@@ -21,6 +21,7 @@ typedef unsigned char ubyte;
 // function-like macros
 #define MIN(a, b) (a < b ? a : b)
 
+// auxiliary functions
 #define F(x, y, z) (x & y | (~x & z))
 #define G(x, y, z) (x & y | (y & ~z)
 #define H(x, y, z) (x ^ y ^ z)
@@ -29,6 +30,12 @@ typedef unsigned char ubyte;
 // rotate bits x left s places
 // (shift left and add bits that wrapped around)
 #define ROTL(x, s) ((x << s) + (x >> (32 - s)))
+
+// MD5 round functions
+#define R1_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + F(b, c, d) + xk + ti), s))
+#define R2_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + G(b, c, d) + xk + ti), s))
+#define R3_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + H(b, c, d) + xk + ti), s))
+#define R4_OP(a, b, c, d, xk, ti, s) (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
 // function declarations
 word * generateT();
@@ -68,6 +75,11 @@ int main() {
     //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     printBlocks(M);
+
+    int numBlocks = M->numBlocks;
+    for (int i = 0; i < numBlocks; i++) {
+        
+    }
 
     // TODO free allocated memory before exit?
 
