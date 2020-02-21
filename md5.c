@@ -53,7 +53,9 @@ int main() {
     word *T = generateT();
 
     // gitignore file
-    struct Blocks *M = readFileAsBlocks("./.gitignore");
+    struct Blocks *blocks = readFileAsBlocks("./.gitignore");
+    int numBlocks = blocks->numBlocks;
+    word **M = blocks->words;
 
     // test files for edge cases
     // empty file
@@ -74,11 +76,36 @@ int main() {
     // large file (~90 MB)
     //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
-    printBlocks(M);
+    printBlocks(blocks);
 
-    int numBlocks = M->numBlocks;
+    // initialise MD buffer
+    word A = 0x01234567;
+    word B = 0x89abcdef;
+    word C = 0xfedcba98;
+    word D = 0x76543218;
+
+    word AA, BB, CC, DD;
+
     for (int i = 0; i < numBlocks; i++) {
-        
+        word *X = M[i];
+
+        AA = A;
+        BB = B;
+        CC = C;
+        DD = D;
+
+        // Round 1
+
+        // Round 2
+
+        // Round 3
+
+        // Round 4
+
+        AA += A;
+        BB += B;
+        CC += C;
+        DD += D;
     }
 
     // TODO free allocated memory before exit?
