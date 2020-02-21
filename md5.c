@@ -137,27 +137,46 @@ int main() {
         R2_OP(B, C, D, A, X[12], 20, T[32]);
 
         // Round 3
-        R2_OP(A, B, C, D, X[5], 4, T[33]);
-        R2_OP(D, A, B, C, X[8], 11, T[34]);
-        R2_OP(C, D, A, B, X[11], 16, T[35]);
-        R2_OP(B, C, D, A, X[14], 23, T[36]);
+        R3_OP(A, B, C, D, X[5], 4, T[33]);
+        R3_OP(D, A, B, C, X[8], 11, T[34]);
+        R3_OP(C, D, A, B, X[11], 16, T[35]);
+        R3_OP(B, C, D, A, X[14], 23, T[36]);
 
-        R2_OP(A, B, C, D, X[1], 4, T[37]);
-        R2_OP(D, A, B, C, X[4], 11, T[38]);
-        R2_OP(C, D, A, B, X[7], 16, T[39]);
-        R2_OP(B, C, D, A, X[10], 23, T[40]);
+        R3_OP(A, B, C, D, X[1], 4, T[37]);
+        R3_OP(D, A, B, C, X[4], 11, T[38]);
+        R3_OP(C, D, A, B, X[7], 16, T[39]);
+        R3_OP(B, C, D, A, X[10], 23, T[40]);
 
-        R2_OP(A, B, C, D, X[13], 4, T[41]);
-        R2_OP(D, A, B, C, X[0], 11, T[42]);
-        R2_OP(C, D, A, B, X[3], 16, T[43]);
-        R2_OP(B, C, D, A, X[6], 23, T[44]);
+        R3_OP(A, B, C, D, X[13], 4, T[41]);
+        R3_OP(D, A, B, C, X[0], 11, T[42]);
+        R3_OP(C, D, A, B, X[3], 16, T[43]);
+        R3_OP(B, C, D, A, X[6], 23, T[44]);
 
-        R2_OP(A, B, C, D, X[9], 4, T[45]);
-        R2_OP(D, A, B, C, X[12], 11, T[46]);
-        R2_OP(C, D, A, B, X[15], 16, T[47]);
-        R2_OP(B, C, D, A, X[2], 23, T[48]);
+        R3_OP(A, B, C, D, X[9], 4, T[45]);
+        R3_OP(D, A, B, C, X[12], 11, T[46]);
+        R3_OP(C, D, A, B, X[15], 16, T[47]);
+        R3_OP(B, C, D, A, X[2], 23, T[48]);
 
         // Round 4
+        R4_OP(A, B, C, D, X[0], 6, T[49]);
+        R4_OP(D, A, B, C, X[7], 10, T[50]);
+        R4_OP(C, D, A, B, X[14], 15, T[51]);
+        R4_OP(B, C, D, A, X[5], 21, T[52]);
+
+        R4_OP(A, B, C, D, X[12], 6, T[53]);
+        R4_OP(D, A, B, C, X[3], 10, T[54]);
+        R4_OP(C, D, A, B, X[10], 15, T[55]);
+        R4_OP(B, C, D, A, X[1], 21, T[56]);
+
+        R4_OP(A, B, C, D, X[8], 6, T[57]);
+        R4_OP(D, A, B, C, X[15], 10, T[58]);
+        R4_OP(C, D, A, B, X[6], 15, T[59]);
+        R4_OP(B, C, D, A, X[13], 21, T[60]);
+
+        R4_OP(A, B, C, D, X[4], 6, T[61]);
+        R4_OP(D, A, B, C, X[11], 10, T[62]);
+        R4_OP(C, D, A, B, X[2], 15, T[63]);
+        R4_OP(B, C, D, A, X[9], 21, T[64]);
 
         AA += A;
         BB += B;
@@ -173,7 +192,7 @@ int main() {
 // generate the 64 element array T, as per the RFC
 word * generateT() {
     // use static so T can be used when out of scope
-    static word T[64];
+    static word T[65];
 
     for (int i = 1; i <= 64; i++) {
         T[i] = (word)(T_MULTIPLIER * fabs(sin(i)));
