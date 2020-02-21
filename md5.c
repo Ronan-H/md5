@@ -7,6 +7,10 @@
 
 // RFC: a "word" is a 32 bit quantity
 typedef uint32_t word;
+// 64 bit unsigned integer
+typedef unsigned long long ull;
+// unsigned byte
+typedef unsigned char ubyte;
 
 // integer constants
 // 2^32 (constant from RFC to generate T)
@@ -83,11 +87,16 @@ word * generateT() {
 }
 
 struct Blocks * readFileAsBlocks(char *filePath) {
-    int bytesRead;
     int byteIndex;
+    int shiftPlaces;
     word currWord;
+    ull fileBytes;
+    ull paddingBytes;
+    ull totalBytes;
+    ull totalBits;
+    FILE *filePtr;
 
-    FILE *filePtr = fopen(filePath, "rb");
+    filePtr = fopen(filePath, "rb");
 
     if (!filePtr) {
         printf("File not found: %s\n", filePath);
@@ -97,19 +106,18 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     // reading binary files: https://stackoverflow.com/a/22059317
     // seek to end of the file to find it's length
     fseek(filePtr, 0, SEEK_END);
-    // TODO: typedef this, its silly
-    unsigned long long fileBytes = ftell(filePtr);
+    fileBytes = ftell(filePtr);
     // compute exact number of padding bytes needed
-    unsigned long long paddingBytes = 65 - ((fileBytes + 8) % 64 + 1);
-    unsigned long long totalBytes = fileBytes + paddingBytes + 8;
-    printf("total bytes: %lld\n", totalBytes);
-    unsigned long long totalBits = fileBytes * 8;
+    paddingBytes = 65 - ((fileBytes + 8) % 64 + 1);
+    // total number of bytes needed for all blocks (a multiple of 64)
+    totalBytes = fileBytes + paddingBytes + 8;
+    totalBits = fileBytes * 8;
     rewind(filePtr);
 
     printf("File is %lld bytes long.\n", fileBytes);
 
-    // read the entire file into a char buffer
-    unsigned char *buffer = (unsigned char *)malloc(totalBytes * sizeof(unsigned char));
+    // read the entire file into a byte buffer
+    ubyte *buffer = (ubyte *)malloc(totalBytes * sizeof(ubyte));
     fread(buffer, fileBytes, 1, filePtr);
 
     // start padding with a 1
@@ -121,19 +129,16 @@ struct Blocks * readFileAsBlocks(char *filePath) {
         buffer[byteIndex] = 0;
     }
 
-    // append 8 bytes describing input length (most significant byte first?)
-    printf("Total bits: %lld\n", totalBits);
-    int shiftPlaces = 56;
+    // append 8 bytes describing input length (most significant byte first)
+    shiftPlaces = 56;
 
     for (; byteIndex < totalBytes; byteIndex++) {
         buffer[byteIndex] = (totalBits >> shiftPlaces) & 0xffff;
         shiftPlaces -= 8;
     }
 
-    // compute the number of blocks needed to store the data, including the padding and input length bytes
-    // (at least 1 block regardless of input length, +1 block for every 64 bytes, +1 extra if needed to fit padding and input length bytes)
+    // compute the number of blocks needed to store all of the data, including the padding and input length bytes
     int numBlocks = totalBytes / 64;
-    printf("Num blocks: %d\n", numBlocks);
 
     // allocate the memory needed for the 2D array M
     // https://stackoverflow.com/a/14088911
@@ -148,6 +153,8 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     blocks->words = M;
     blocks->numBlocks = numBlocks;
 
+    // now convert the buffer array of bytes into a series of blocks,
+    // each containing 16x 32 bit words (512 bits total)
     byteIndex = 3;
     currWord = 0;
     for (int i = 0; i < totalBytes; i++) {
@@ -155,6 +162,7 @@ struct Blocks * readFileAsBlocks(char *filePath) {
         currWord = currWord | (buffer[i] << (byteIndex-- * 8));
 
         if (byteIndex == -1 || i == totalBytes - 1) {
+            // write currWord to the next index of the current block
             M[i / 64][(i % 64) / 4] = currWord;
             currWord = 0;
             byteIndex = 3;
@@ -185,6 +193,7 @@ void printBlocks(struct Blocks *M) {
     word **words = M->words;
     int numBlocks = M->numBlocks;
 
+    printf("\n");
     for (int i = 0; i < numBlocks; i++) {
         printf("BLOCK: %d\n", i);
 
@@ -194,4 +203,5 @@ void printBlocks(struct Blocks *M) {
 
         printf("\n");
     }
+    printf("\n");
 }
