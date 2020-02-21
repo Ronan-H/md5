@@ -107,7 +107,7 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     printf("File is %lld bytes long.\n", fileBytes);
 
     // read the entire file into a char buffer
-    char *buffer = (char *)malloc(totalBytes * sizeof(char));
+    unsigned char *buffer = (unsigned char *)malloc(totalBytes * sizeof(unsigned char));
     fread(buffer, fileBytes, 1, filePtr);
 
     // start padding with a 1
