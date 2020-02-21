@@ -53,28 +53,29 @@ int main() {
     word *T = generateT();
 
     // gitignore file
-    struct Blocks *blocks = readFileAsBlocks("./.gitignore");
-    int numBlocks = blocks->numBlocks;
-    word **M = blocks->words;
+    //struct Blocks *blocks = readFileAsBlocks("./.gitignore");
 
     // test files for edge cases
     // empty file
-    //struct Blocks *M = readFileAsBlocks("./input/0_bytes.txt");
+    struct Blocks *blocks = readFileAsBlocks("./input/0_bytes.txt");
     // all bytes (including padding and input length) should fit in one block
-    //struct Blocks *M = readFileAsBlocks("./input/7_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/7_bytes.txt");
     // all bytes (including padding and input length) should fit in two blocks
-    //struct Blocks *M = readFileAsBlocks("./input/70_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/70_bytes.txt");
     // all bytes (including padding and input length) should just about fit in two blocks
-    //struct Blocks *M = readFileAsBlocks("./input/119_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/119_bytes.txt");
     // padding space requirements forces creation of an extra block
-    //struct Blocks *M = readFileAsBlocks("./input/120_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/120_bytes.txt");
     // same as above
-    //struct Blocks *M = readFileAsBlocks("./input/121_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/121_bytes.txt");
     // input fills exactly 2 blocks, 3rd block is entirely padding and input length
-    //struct Blocks *M = readFileAsBlocks("./input/128_bytes.txt");
+    //struct Blocks *blocks = readFileAsBlocks("./input/128_bytes.txt");
 
     // large file (~90 MB)
     //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+
+    int numBlocks = blocks->numBlocks;
+    word **M = blocks->words;
 
     printBlocks(blocks);
 
@@ -178,11 +179,13 @@ int main() {
         R4_OP(C, D, A, B, X[2], 15, T[63]);
         R4_OP(B, C, D, A, X[9], 21, T[64]);
 
-        AA += A;
-        BB += B;
-        CC += C;
-        DD += D;
+        A += AA;
+        B += BB;
+        C += CC;
+        D += DD;
     }
+
+    printf("Hash: %x%x%x%x\n\n", A, B, C, D);
 
     // TODO free allocated memory before exit?
 
