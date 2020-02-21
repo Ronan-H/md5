@@ -41,13 +41,29 @@ int main() {
     // entry point of the program
     word *T = generateT();
 
-    // small file
-    struct Blocks *M = readFileAsBlocks("./.gitignore");
+    // gitignore file
+    // struct Blocks *M = readFileAsBlocks("./.gitignore");
+
+    // test files for edge cases
+    // empty file
+    //struct Blocks *M = readFileAsBlocks("./input/0_bytes.txt");
+    // all bytes (including padding and input length) should fit in one block
+    //struct Blocks *M = readFileAsBlocks("./input/7_bytes.txt");
+    // all bytes (including padding and input length) should fit in two blocks
+    //struct Blocks *M = readFileAsBlocks("./input/70_bytes.txt");
+    // all bytes (including padding and input length) should just about fit in two blocks
+    struct Blocks *M = readFileAsBlocks("./input/119_bytes.txt");
+    // padding space requirements forces creation of an extra block
+    //struct Blocks *M = readFileAsBlocks("./input/120_bytes.txt");
+    // same as above
+    //struct Blocks *M = readFileAsBlocks("./input/121_bytes.txt");
 
     // large file
-    //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+    // struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     printBlocks(M);
+
+    // TODO free allocated memory before exit?
 
     return 0;
 }
