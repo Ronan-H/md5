@@ -16,7 +16,7 @@ typedef unsigned char ubyte;
 // 2^32 (constant from RFC to generate T)
 #define T_MULTIPLIER 4294967296
 // single padding bit
-#define FIRST_PADDING_BYTE 1;
+#define FIRST_PADDING_BYTE 128;
 
 // function-like macros
 #define MIN(a, b) (a < b ? a : b)
@@ -185,7 +185,18 @@ int main() {
         D += DD;
     }
 
-    printf("Hash: %x%x%x%x\n\n", A, B, C, D);
+    // print ABCD in low-byte order
+    printf("Hash: ");
+    word state[4] = {A, B, C, D};
+    word w;
+    for (int i = 0; i < 4; i++) {
+        w = state[i];
+
+        for (int j = 0; j < 4; j++) {
+            printf("%02x", w >> (j * 8) & 0xff);
+        }
+    }
+    printf("\n\n");
 
     // TODO free allocated memory before exit?
 
@@ -247,12 +258,12 @@ struct Blocks * readFileAsBlocks(char *filePath) {
         buffer[byteIndex] = 0;
     }
 
-    // append 8 bytes describing input length (most significant byte first)
-    shiftPlaces = 56;
+    // append 8 bytes describing input length (least significant byte first)
+    shiftPlaces = 0;
 
     for (; byteIndex < totalBytes; byteIndex++) {
         buffer[byteIndex] = (totalBits >> shiftPlaces) & 0xffff;
-        shiftPlaces -= 8;
+        shiftPlaces += 8;
     }
 
     // compute the number of blocks needed to store all of the data, including the padding and input length bytes
