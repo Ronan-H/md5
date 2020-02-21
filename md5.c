@@ -222,12 +222,9 @@ word * generateT() {
 }
 
 struct Blocks * readFileAsBlocks(char *filePath) {
-    int byteIndex;
+    int bi;
     int shiftPlaces;
-    word currWord;
     word *currBlock;
-    int blockIndex;
-    int wordIndex;
     ull fileBytes;
     ull paddingBytes;
     ull totalBytes;
@@ -257,19 +254,19 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     fread(buffer, fileBytes, 1, filePtr);
 
     // start padding with a 1
-    byteIndex = fileBytes;
-    buffer[byteIndex++] = FIRST_PADDING_BYTE;
+    bi = fileBytes;
+    buffer[bi++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
-    for (; byteIndex < totalBytes - 8; byteIndex++) {
-        buffer[byteIndex] = 0;
+    for (; bi < totalBytes - 8; bi++) {
+        buffer[bi] = 0;
     }
 
     // append 8 bytes describing input length (least significant byte first)
     shiftPlaces = 0;
 
-    for (; byteIndex < totalBytes; byteIndex++) {
-        buffer[byteIndex] = (totalBits >> shiftPlaces) & 0xffff;
+    for (; bi < totalBytes; bi++) {
+        buffer[bi] = (totalBits >> shiftPlaces) & 0xffff;
         shiftPlaces += 8;
     }
 
@@ -291,27 +288,14 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // now convert the buffer array of bytes into a series of blocks,
     // each containing 16x 32 bit words (512 bits total)
-    byteIndex = 0;
-    currWord = 0;
-    blockIndex = 0;
-    currBlock = M[blockIndex++];
-    wordIndex = 0;
-    for (int i = 0; i < totalBytes; i++) {
-        // combine byte into the current word (little-endian, as per the RFC)
-        currWord = currWord | (buffer[i] << byteIndex);
-        byteIndex += 8;
+    bi = 0;
+    for (int i = 0; i < numBlocks; i++) {
+        currBlock = M[i];
 
-        if (byteIndex == 32 || i == totalBytes - 1) {
-            // write currWord to the next index of the current block
-            currBlock[wordIndex++] = currWord;
-
-            if (wordIndex >= 16) {
-                currBlock = M[blockIndex++];
-                wordIndex = 0;
-            }
-
-            currWord = 0;
-            byteIndex = 0;
+        for (int j = 0; j < 16; j++) {
+            // combine 4 bytes into a word (little-endian, as per the RFC)
+            // and write the word to the block
+            currBlock[j] = buffer[bi++] | (buffer[bi++] << 8) | (buffer[bi++] << 16) | (buffer[bi++] << 24);
         }
     }
 
