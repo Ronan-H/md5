@@ -41,7 +41,12 @@ int main() {
     // entry point of the program
     word *T = generateT();
 
+    // small file
     struct Blocks *M = readFileAsBlocks("./.gitignore");
+
+    // large file
+    //struct Blocks *M = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
+
     printBlocks(M);
 
     return 0;
@@ -86,23 +91,26 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     printf("File is %lld bytes long.\n", fileBytes);
 
     // read the entire file into a char buffer
-    char buffer[totalBytes];
+    char *buffer = (char *)malloc(totalBytes * sizeof(char));
     fread(buffer, fileBytes, 1, filePtr);
 
     // start padding with a 1
-    int paddingIndex = fileBytes;
-    buffer[paddingIndex++] = FIRST_PADDING_BYTE;
+    byteIndex = fileBytes;
+    buffer[byteIndex++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
-    for (; paddingIndex < totalBytes - 2; paddingIndex++) {
-        buffer[paddingIndex] = 0;
+    for (; byteIndex < totalBytes - 8; byteIndex++) {
+        buffer[byteIndex] = 0;
     }
 
-    // append input length (most significant byte first?)
-    // TODO: this probably isn't right.
+    // append 8 bytes describing input length (most significant byte first?)
     printf("Total bits: %lld\n", totalBits);
-    buffer[totalBytes - 2] = totalBits >> 16;
-    buffer[totalBytes - 1] = totalBits & 0xffff;
+    int shiftPlaces = 56;
+
+    for (; byteIndex < totalBytes; byteIndex++) {
+        buffer[byteIndex] = (totalBits >> shiftPlaces) & 0xffff;
+        shiftPlaces -= 8;
+    }
 
     // compute the number of blocks needed to store the data, including the padding and input length bytes
     // (at least 1 block regardless of input length, +1 block for every 64 bytes, +1 extra if needed to fit padding and input length bytes)
@@ -137,6 +145,9 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
     // close file
     fclose(filePtr);
+
+    // free buffer memory
+    free(buffer);
 
     // return pointer to blocks
     return blocks;
