@@ -235,18 +235,14 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
     // total number of bytes needed for all blocks (a multiple of 64)
     // (file bytes + padding bytes + input length bytes)
     totalBytes = length + paddingBytes + 8;
-    totalBits = fileBytes * 8;
-    rewind(filePtr);
-
-    // read the entire file into a byte buffer
-    ubyte *buffer = (ubyte *)malloc(totalBytes * sizeof(ubyte));
+    totalBits = length * 8;
     
     // start padding with a 1
     p = length;
     bytes[p++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
-    for (; p < bytes - 8; p++) {
+    for (; p < totalBytes - 8; p++) {
         bytes[p] = 0;
     }
 
