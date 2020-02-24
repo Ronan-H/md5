@@ -8,6 +8,7 @@ int main() {
     int strLen = 0;
 
     do {
+        // get string input from user
         printf("Enter a string to hash, or EXIT to exit: ");
         fgets(inputStr, 100, stdin);
 
@@ -19,9 +20,12 @@ int main() {
             }
         }
 
+        // copy input since makeBlocks() changes it
         char inputStrCopy[100];
         strcpy(inputStrCopy, inputStr);
         Blocks *blocks = makeBlocks(inputStrCopy, strLen);
+        // generate hash and display to the user
+        // (even if it was EXIT, maybe they wanted to know what the hash of EXIT is before exiting)
         char *hash = md5(blocks);
         printf("\nHash value: %s\n\n", hash);
     } while(strcmp(inputStr, "EXIT\n") != 0);

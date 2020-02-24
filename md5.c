@@ -139,6 +139,7 @@ char * md5(Blocks *blocks) {
         free(M[i]);
     }
 
+    // free block memory since it's no longer needed
     free(M);
     free(blocks);
 
@@ -258,8 +259,11 @@ struct Blocks * readFileAsBlocks(char *filePath) {
 
 void printWordBits(word w) {
     for (int i = 0; i < 32; i++) {
+        // next 1 or 0
         word bit = (w & 0x80000000) != 0;
+        // print bit
         printf("%" PRIu32, bit);
+        // shift w along by 1 so next bit is ready to be printed
         w = w << 1;
     }
 
@@ -274,6 +278,7 @@ void printBlocks(struct Blocks *M) {
     for (int i = 0; i < numBlocks; i++) {
         printf("BLOCK: %d\n", i);
 
+        // print bits of each 32 bit word in turn
         for (int j = 0; j < 16; j++) {
             printWordBits(words[i][j]);
         }
@@ -284,6 +289,7 @@ void printBlocks(struct Blocks *M) {
 }
 
 bool isHashEqual(char *hashA, char *hashB) {
+    // compare hash values character by character
     for (int i = 0; i < 32; i++) {
         if (hashA[i] != hashB[i]) {
             return false;
@@ -294,10 +300,13 @@ bool isHashEqual(char *hashA, char *hashB) {
 }
 
 void testFileHash(char *filePath, char *expectedHash) {
+    // generate file hash
     struct Blocks *blocks = readFileAsBlocks(filePath);
     char *actualHash = md5(blocks);
+    // check if they match
     bool matches = isHashEqual(expectedHash, actualHash);
-
+    
+    // print results
     printf("TESTING FILE:  %s\n", filePath);
     printf("EXPECTED HASH: %s\n", expectedHash);
     printf("ACTUAL HASH:   %s\n", actualHash);
