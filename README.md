@@ -31,7 +31,7 @@ cd md5
 
 3. Compile
 ```shell
-gcc md5.c -o md5 -lm
+gcc md5.c main.c -o md5 -lm
 ```
 
 4. Run
@@ -41,7 +41,7 @@ gcc md5.c -o md5 -lm
 
 5. (Optional) Compile and run can be combined for convenience
 ```shell
-gcc md5.c -o md5 -lm && ./md5
+gcc md5.c main.c -o md5 -lm && ./md5
 ```
 
 ## How it Works

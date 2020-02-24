@@ -118,18 +118,21 @@ char * md5(Blocks *blocks) {
     // print ABCD in low-byte order
     word state[4] = {A, B, C, D};
     word w;
-    char result[32];
+    char *result = (char *)malloc(33 * sizeof(char));
     for (int i = 0; i < 4; i++) {
         w = state[i];
-
-        snprintf(result, 32,
-            "%02x%02x%02x%02x",
-            (w  & 0xff),
-            ((w >> 8) & 0xff),
-            ((w >> 16) & 0xff),
-            ((w >> 24) & 0xff)
-        );
+        
+        // format string into a char array: https://stackoverflow.com/a/39495281
+        sprintf(result + (i * 8),
+                "%02x%02x%02x%02x",
+                w & 0xff,
+                (w >> 8) & 0xff,
+                (w >> 16) & 0xff,
+                (w >> 24) & 0xff
+            );
     }
+    // append null terminator
+    result[32] = '\0';
 
     // free all dynamically allocated memory
     for (int i = 0; i < numBlocks; i++) {

@@ -1,5 +1,5 @@
-#ifndef DEFINITIONS
-#define DEFINITIONS
+#ifndef MD5
+#define MD5
 
 #include <stdio.h>
 #include <stdlib.h>

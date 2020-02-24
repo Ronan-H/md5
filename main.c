@@ -27,7 +27,7 @@ int main() {
     //struct Blocks *blocks = readFileAsBlocks("/home/ronan/Videos/video-project.mp4");
 
     char *hash = md5(blocks);
-    printf(hash);
-
+    printf("%s\n", hash);
+    
     return 0;
 }
