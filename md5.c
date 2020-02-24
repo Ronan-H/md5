@@ -1,6 +1,6 @@
 #include "md5.h"
 
-ubyte * md5(Blocks *blocks) {
+char * md5(Blocks *blocks) {
     word *T = generateT();
 
     int numBlocks = blocks->numBlocks;
@@ -118,14 +118,18 @@ ubyte * md5(Blocks *blocks) {
     // print ABCD in low-byte order
     word state[4] = {A, B, C, D};
     word w;
+    char result[32];
     for (int i = 0; i < 4; i++) {
         w = state[i];
 
-        for (int j = 0; j < 4; j++) {
-            printf("%02x", w >> (j * 8) & 0xff);
-        }
+        snprintf(result, 32,
+            "%02x%02x%02x%02x",
+            (w  & 0xff),
+            ((w >> 8) & 0xff),
+            ((w >> 16) & 0xff),
+            ((w >> 24) & 0xff)
+        );
     }
-    printf("\n");
 
     // free all dynamically allocated memory
     for (int i = 0; i < numBlocks; i++) {
@@ -135,7 +139,7 @@ ubyte * md5(Blocks *blocks) {
     free(M);
     free(blocks);
 
-    return 0;
+    return result;
 }
 
 // generate the 64 element array T, as per the RFC

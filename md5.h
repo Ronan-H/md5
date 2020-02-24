@@ -40,17 +40,18 @@ typedef unsigned char ubyte;
 #define R3_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + H(b, c, d) + xk + ti), s))
 #define R4_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
+// structs
+typedef struct Blocks {
+    word **words;
+    int numBlocks;
+} Blocks;
+
 // function declarations
-ubyte * md5();
+char * md5(Blocks *blocks);
 word * generateT();
 struct Blocks * makeBlocks(ubyte *bytes, int length);
 struct Blocks * readFileAsBlocks(char *filePath);
 void printWordBits(word w);
 void printBlocks(struct Blocks *);
-
-typedef struct Blocks {
-    word **words;
-    int numBlocks;
-} Blocks;
 
 #endif
