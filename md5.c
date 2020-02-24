@@ -322,4 +322,6 @@ void runTestSuite() {
     testFileHash("./input/121_bytes.txt", "456ba7f594dc57df3ab8015b959b3917");
     // input fills exactly 2 blocks, 3rd block is entirely padding and input length
     testFileHash("./input/128_bytes.txt", "2bcf219635c03d2db06f516b2d605fb0");
+
+    printf("\n\n");
 }
