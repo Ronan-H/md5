@@ -39,6 +39,7 @@ typedef unsigned char ubyte;
 
 // function declarations
 word * generateT();
+struct Blocks * makeBlocks(ubyte *bytes, int length);
 struct Blocks * readFileAsBlocks(char *filePath);
 void printWordBits(word w);
 void printBlocks(struct Blocks *);
@@ -221,52 +222,38 @@ word * generateT() {
     return T;
 }
 
-struct Blocks * readFileAsBlocks(char *filePath) {
+struct Blocks * makeBlocks(ubyte *bytes, int length) {
     int p;
     int shiftPlaces;
     word *currBlock;
-    ull fileBytes;
     ull paddingBytes;
     ull totalBytes;
     ull totalBits;
-    FILE *filePtr;
 
-    filePtr = fopen(filePath, "rb");
-
-    if (!filePtr) {
-        printf("File not found: %s\n", filePath);
-        exit(1);
-    }
-
-    // reading binary files: https://stackoverflow.com/a/22059317
-    // seek to end of the file to find it's length
-    fseek(filePtr, 0, SEEK_END);
-    fileBytes = ftell(filePtr);
     // compute exact number of padding bytes needed
-    paddingBytes = 65 - ((fileBytes + 8) % 64 + 1);
+    paddingBytes = 65 - ((length + 8) % 64 + 1);
     // total number of bytes needed for all blocks (a multiple of 64)
     // (file bytes + padding bytes + input length bytes)
-    totalBytes = fileBytes + paddingBytes + 8;
+    totalBytes = length + paddingBytes + 8;
     totalBits = fileBytes * 8;
     rewind(filePtr);
 
     // read the entire file into a byte buffer
     ubyte *buffer = (ubyte *)malloc(totalBytes * sizeof(ubyte));
-    fread(buffer, fileBytes, 1, filePtr);
-
+    
     // start padding with a 1
-    p = fileBytes;
-    buffer[p++] = FIRST_PADDING_BYTE;
+    p = length;
+    bytes[p++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
-    for (; p < totalBytes - 8; p++) {
-        buffer[p] = 0;
+    for (; p < bytes - 8; p++) {
+        bytes[p] = 0;
     }
 
     // append 8 bytes describing input length (least significant byte first)
     shiftPlaces = 0;
     for (; p < totalBytes; p++) {
-        buffer[p] = (totalBits >> shiftPlaces) & 0xffff;
+        bytes[p] = (totalBits >> shiftPlaces) & 0xffff;
         shiftPlaces += 8;
     }
 
@@ -295,9 +282,38 @@ struct Blocks * readFileAsBlocks(char *filePath) {
         for (int j = 0; j < 16; j++) {
             // combine 4 bytes into a word (little-endian, as per the RFC)
             // and write the word to the block at the next index
-            currBlock[j] = buffer[p++] | (buffer[p++] << 8) | (buffer[p++] << 16) | (buffer[p++] << 24);
+            currBlock[j] = bytes[p++] | (bytes[p++] << 8) | (bytes[p++] << 16) | (bytes[p++] << 24);
         }
     }
+
+    // return pointer to blocks
+    return blocks;
+}
+
+struct Blocks * readFileAsBlocks(char *filePath) {
+    ull fileLength;
+    FILE *filePtr;
+
+    filePtr = fopen(filePath, "rb");
+
+    if (!filePtr) {
+        printf("File not found: %s\n", filePath);
+        exit(1);
+    }
+
+    // reading binary files: https://stackoverflow.com/a/22059317
+    // seek to end of the file to find it's length
+    fseek(filePtr, 0, SEEK_END);
+    fileLength = ftell(filePtr);
+    rewind(filePtr);
+
+    // read the entire file into a byte buffer
+    // (leave enough space for the maximum possible padding length + input length bytes)
+    ubyte *buffer = (ubyte *)malloc((fileLength + 72) * sizeof(ubyte));
+    fread(buffer, fileLength, 1, filePtr);
+
+    // convert byte array to blocks
+    Blocks *blocks = makeBlocks(buffer, fileLength);
 
     // close file
     fclose(filePtr);
