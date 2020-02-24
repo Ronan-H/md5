@@ -8,6 +8,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ncurses.h>
 
 // RFC: a "word" is a 32 bit quantity
 typedef uint32_t word;

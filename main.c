@@ -3,11 +3,28 @@
 int main() {
     runTestSuite();
 
-    char buf[200];
-    strcpy(buf, "Hello World!");
-    Blocks *blocks = makeBlocks(buf, 12);
-    char *hash = md5(blocks);
-    printf("%s\n", hash);
+    char inputStr[100];
+    char *pos;
+    int strLen = 0;
+
+    do {
+        printf("Enter a string to hash, or EXIT to exit: ");
+        fgets(inputStr, 100, stdin);
+
+        // find new line character so it can be ignored
+        for (int i = 0; i < 100; i++) {
+            if (inputStr[i] == '\n') {
+                strLen = i;
+                break;
+            }
+        }
+
+        char inputStrCopy[100];
+        strcpy(inputStrCopy, inputStr);
+        Blocks *blocks = makeBlocks(inputStrCopy, strLen);
+        char *hash = md5(blocks);
+        printf("\nHash value: %s\n\n", hash);
+    } while(strcmp(inputStr, "EXIT\n") != 0);
 
     return 0;
 }
