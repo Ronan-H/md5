@@ -53,5 +53,7 @@ struct Blocks * makeBlocks(ubyte *bytes, int length);
 struct Blocks * readFileAsBlocks(char *filePath);
 void printWordBits(word w);
 void printBlocks(struct Blocks *);
+bool isHashEqual(char *hashA, char *hashB);
+void testFileHash(char *filePath, char *expectedHash);
 
 #endif

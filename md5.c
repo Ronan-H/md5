@@ -282,3 +282,26 @@ void printBlocks(struct Blocks *M) {
     }
     printf("\n");
 }
+
+bool isHashEqual(char *hashA, char *hashB) {
+    for (int i = 0; i < 32; i++) {
+        if (hashA[i] != hashB[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void testFileHash(char *filePath, char *expectedHash) {
+    struct Blocks *blocks = readFileAsBlocks(filePath);
+    char *actualHash = md5(blocks);
+    bool matches = isHashEqual(expectedHash, actualHash);
+
+    printf("TESTING FILE:  %s\n", filePath);
+    printf("EXPECTED HASH: %s\n", expectedHash);
+    printf("ACTUAL HASH:   %s\n", actualHash);
+    printf("MATCHES?       %s\n\n", (matches ? "YES" : "NO"));
+
+    free(actualHash);
+}
