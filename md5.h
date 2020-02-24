@@ -41,6 +41,7 @@ typedef unsigned char ubyte;
 #define R4_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
 // function declarations
+ubyte * md5();
 word * generateT();
 struct Blocks * makeBlocks(ubyte *bytes, int length);
 struct Blocks * readFileAsBlocks(char *filePath);
