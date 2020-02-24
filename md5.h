@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <string.h>
 
 // RFC: a "word" is a 32 bit quantity
 typedef uint32_t word;
@@ -55,5 +56,6 @@ void printWordBits(word w);
 void printBlocks(struct Blocks *);
 bool isHashEqual(char *hashA, char *hashB);
 void testFileHash(char *filePath, char *expectedHash);
+void runTestSuite();
 
 #endif
