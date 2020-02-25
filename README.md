@@ -50,6 +50,17 @@ gcc md5.c main.c -o md5 -lm
 gcc md5.c main.c -o md5 -lm && ./md5
 ```
 
+## What it Does, and Testing
+The purpose of what running the application does is to demonstrate that it can produce the correct md5 hash of any input. As such, running the program will first run the md5 algorithm against all 7 test files in *input/*:
+
+**== TEST CASE OUTPUT HERE ==**
+
+As shown, my implementation produces the correct hash for all 7 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum input/*```, which produces the following output:
+
+**== OUTPUT OF md5sum input/* HERE ==
+
+After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the md5 hash of that string. Entering *EXIT* exits the application.
+
 ## How it Works
 
 How it works here.
