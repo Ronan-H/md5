@@ -63,7 +63,12 @@ After that, the user is free to enter any string they want into the console (arb
 
 ## How it Works
 
-How it works here.
+MD5 *(message digest 5)* is a hash function, taking an arbitrary length (max 2^64 bits) input and converting it into a 128 bit output, usually represent as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash. These use cases relied on three different properties of MD5:
+
+* Collision resistance: computationally infeasible to find two different inputs which produce the same hash
+* Preimage resistance: computationally infeasible to find the original message from it's produced hash
+
+Collisions have been successfully found for MD5, and a theoretical preimage attack has also been found. As such, MD5 is now considered insecure, and the SHA-2 set of cryptographic functions should be use instead.
 
 ## How I Wrote it
 
