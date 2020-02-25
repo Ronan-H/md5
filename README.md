@@ -72,4 +72,4 @@ Collisions have been successfully found for MD5, and a theoretical preimage atta
 
 ## How I Wrote it
 
-How I wrote it here.
+I mostly followed the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) which specifies the MD5 algorithm to write it. I usually used the same variable and type names as the RFC too, to help me follow it. Instead of storing the input bytes M in one big array, I stored them in a 2D array of *word* blocks. This is probably slightly less efficient but in my view it is a more elegant solution.
