@@ -6,11 +6,17 @@ MD5 implementation in C (4th year Theory of Algorithms assignment)
 Fill in shortcuts to each section here.
 
 ## Files
-**md5.c:** MD5 implementation in C.
+**input/**: Test input files. Contains 7 different files of different sizes in an attempt to cover as many edge cases as possible.
 
-**README.md:** This README file.
+**.gitignore**: Gitignore file, ignoring IDE and compilation files.
 
-**.gitignore:** Gitignore file, ignoring IDE and compilation files.
+**README.md**: This README file.
+
+**main.c**: Program entry point, containing *main()*. Runs all test cases from *input/*, and then allows the user to enter any string they like to see it's corresponding hash value, in a loop.
+
+**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32bit *word* values as bits, display blocks, etc.
+
+**md5.h**: Header file containing definitions for both *md5.c* and *main.c*.p
 
 ## How to Compile and Run
 
