@@ -9,13 +9,13 @@
  * [Simplification: Using Bytes](#simplification-using-bytes)
 
 ## Files
-**input/**: Test input files. Contains 7 different files of different sizes in an attempt to cover as many edge cases as possible.
+**test_input/**: Test input files. Contains 9 different files of different sizes in an attempt to cover as many edge cases as possible.
 
 **.gitignore**: Gitignore file, ignoring IDE and compilation files.
 
 **README.md**: This README file.
 
-**main.c**: Program entry point, containing *main()*. Runs all test cases from *input/*, and then allows the user to enter any string they like to see it's corresponding hash value, in a loop.
+**main.c**: Program entry point, containing *main()*. Runs all test cases from *test_input/*, and then allows the user to enter any string they like to see it's corresponding hash value, in a loop.
 
 **md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32bit *word* values as bits, display blocks, etc.
 
@@ -54,7 +54,7 @@ gcc md5.c main.c -o md5 -lm && ./md5
 ```
 
 ## What it Does, and Testing
-The purpose of the application is to demonstrate that it can produce the correct MD5 hash of any input. As such, running the program will first run the MD5 algorithm against all 7 test files in *input/*:
+The purpose of the application is to demonstrate that it can produce the correct MD5 hash of any input. As such, running the program will first run the MD5 algorithm against all 9 test files in *test_input/*:
 
 ```
 TESTING FILE:  ./test_input/0_bytes.txt
@@ -103,7 +103,7 @@ ACTUAL HASH:   a36764134107d0fe6c80bc7fa696fb16
 MATCHES? -- YES --
 ```
 
-As shown, my implementation produces the correct hash for all 7 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
+As shown, my implementation produces the correct hash for all 9 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
 ```
 d41d8cd98f00b204e9800998ecf8427e  test_input/0_bytes.txt
