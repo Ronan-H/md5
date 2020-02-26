@@ -1,9 +1,13 @@
 # MD5
-MD5 implementation in C (4th year Theory of Algorithms assignment)
 
 ## Table of Contents
-
-Fill in shortcuts to each section here.
+ * [MD5](#md5)
+ * [Table of Contents](#table-of-contents)
+ * [Files](#files)
+ * [How to Compile and Run](#how-to-compile-and-run)
+ * [What it Does, and Testing](#what-it-does-and-testing)
+ * [How it Works](#how-it-works)
+ * [How I Wrote it](#how-i-wrote-it)
 
 ## Files
 **input/**: Test input files. Contains 7 different files of different sizes in an attempt to cover as many edge cases as possible.
@@ -157,5 +161,5 @@ Here is how it works all together:
 
 From there, the blocks are fed straight into the md5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says do in pseudocode, I just had to translate it into C code.
 
-### Fixing Bugs
-Once I was able to get a hash value out, the last step to the algorithm was fixing all the bugs. These were mostly typos, which isn't surprising, since there's so many values to copy from the RFC. Because of how hashing works, the hash value is *completely different* to the expected value if *anything* is wrong, even if a single bit is out of place. This is because of the (https://en.wikipedia.org/wiki/Avalanche_effect)[avalanche effect]. I had also gotten the *endianness* wrong when constructing a *word* value from 4 bytes. Eventually though, the hash came out right, and from there it was just a case of cleaning up and refactoring the code, allowing the user to enter their own input to be hashed, etc.
+### Fixing Bugs and Finishing Up
+Once I was able to get a hash value out, the last step to the algorithm was fixing all the bugs. These were mostly typos, which isn't surprising, since there's so many values to copy from the RFC. Because of how hashing works, the hash value is *completely different* to the expected value if *anything* is wrong, even if a single bit is out of place. This is because of the [avalanche effect](https://en.wikipedia.org/wiki/Avalanche_effect). I had also gotten the *endianness* wrong when constructing a *word* value from 4 bytes. Eventually though, the hash came out right, and from there it was just a case of cleaning up and refactoring the code, allowing the user to enter their own input to be hashed, etc.
