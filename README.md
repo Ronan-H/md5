@@ -131,4 +131,31 @@ Collisions have been successfully found for MD5, and a theoretical preimage atta
 
 ## How I Wrote it
 
-I mostly followed the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) which specifies the MD5 algorithm to write it. I usually used the same variable and type names as the RFC too, to help me follow it. Instead of storing the input bytes M in one big array, I stored them in a 2D array of *word* blocks. This is probably slightly less efficient but in my view it is a more elegant solution.
+### Getting Started
+I mostly followed the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) which specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to help me follow it. Instead of storing the input bytes *M* in one big array, I stored them in a 2D array of *word* blocks. This is probably slightly less efficient but in my view it is a more elegant solution. I began by defining some easy *funtion-like* macros, such as F(), G(), H() and I(). These were pretty easy to implement, as it was just a matter of translating the mathematical functions given in the RFC into C code.
+
+### Running into Difficulties
+After that, though, it got a lot more difficult. I decided I would use a file as input to the hashing functon. I had to look up how to read an entire file into memory in C, stored in a byte array. Originally, I decided to store blocks in a linkedlist. This worked, however writing the padding code proved to be difficult to do elegantly and efficiently. Another mistake I made was not calculating how many blocks were needed ahead of time. This makes inserting the padding a lot easier, since there's no question about whether or not there needs to be an extra block added for padding.
+
+### Making Things Easier
+Eventually, I decided that a 2 dimensional array of *word*s would be the best way or representing a series of blocks. This makes it easier to iterate over the values in each block. Also, I decided that the padding bits should be added to the input message *before* converting the input into blocks, not after.
+
+Using these ideas makes the file reading, padding, and block building steps fairly straight forward.
+
+### Constructing Blocks, Step by Step
+Here is how it works all together:
+1. Compute exact number of padding bytes needed to append to the message.
+   * For this I came up with the formula ```paddingBytes = 65 - ((length + 8) % 64 + 1);```
+2. Compute the total number of bytes needed for the byte ```buffer```: ```totalBytes = length + paddingBytes + 8;```
+   * 8 bytes are needed at the end to represent the input length; a 64 bit unsigned integer
+   * ```totalBytes``` is now guaranteed to be evenly divisible by 64, ie. full blocks can be constructed with no bytes left over.
+3. Create a byte array ```buffer``` with length ```totalBytes```. Read the entire file into this array. There will be space left over for padding and input length bytes.
+4. Append the first bit of padding, a 1. This is easy now, we just write the integer 128 to the above array. 128 represents 1 followed by 7 zeroes in binary.
+5. Write all the remaining 0's of padding. Again, this is pretty easy. We're just filling the rest of the array with 0's, **up untill we reach the 8 bytes of input length at the end**. We could write 0's here but we're just about to write the input length there anyway.
+6. Use bitwise operations to represent the input length in the last 8 bytes.
+7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. This was one of the most confusing aspects of the assignment to get right.
+
+From there, the blocks are fed straight into the md5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says do in pseudocode, I just had to translate it into C code.
+
+### Fixing Bugs
+Once I was able to get a hash value out, the last step to the algorithm was fixing all the bugs. These were mostly typos, which isn't surprising, since there's so many values to copy from the RFC. Because of how hashing works, the hash value is *completely different* to the expected value if *anything* is wrong, even if a single bit is out of place. This is because of the (https://en.wikipedia.org/wiki/Avalanche_effect)[avalanche effect]. I had also gotten the *endianness* wrong when constructing a *word* value from 4 bytes. Eventually though, the hash came out right, and from there it was just a case of cleaning up and refactoring the code, allowing the user to enter their own input to be hashed, etc.
