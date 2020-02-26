@@ -21,13 +21,13 @@ int main() {
         }
 
         // copy input since makeBlocks() changes it
-        char inputStrCopy[100];
+        char inputStrCopy[200];
         strcpy(inputStrCopy, inputStr);
         Blocks *blocks = makeBlocks(inputStrCopy, strLen);
         // generate hash and display to the user
         // (even if it was EXIT, maybe they wanted to know what the hash of EXIT is before exiting)
         char *hash = md5(blocks);
-        printf("\nHash value: %s\n\n", hash);
+        printf("                         MD5 Hash value: %s\n\n", hash);
     } while(strcmp(inputStr, "EXIT\n") != 0);
 
     return 0;
