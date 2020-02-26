@@ -53,11 +53,54 @@ gcc md5.c main.c -o md5 -lm && ./md5
 ## What it Does, and Testing
 The purpose of what running the application does is to demonstrate that it can produce the correct md5 hash of any input. As such, running the program will first run the md5 algorithm against all 7 test files in *input/*:
 
-**== TEST CASE OUTPUT HERE ==**
+```
+TESTING FILE:  ./input/0_bytes.txt
+EXPECTED HASH: d41d8cd98f00b204e9800998ecf8427e
+ACTUAL HASH:   d41d8cd98f00b204e9800998ecf8427e
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/7_bytes.txt
+EXPECTED HASH: a30647b9afd8edab046dc999d5005745
+ACTUAL HASH:   a30647b9afd8edab046dc999d5005745
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/70_bytes.txt
+EXPECTED HASH: 2ee1d2ac4ca54921803e3e561ca7160e
+ACTUAL HASH:   2ee1d2ac4ca54921803e3e561ca7160e
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/119_bytes.txt
+EXPECTED HASH: aae4424f064da59e945d090f68086e3d
+ACTUAL HASH:   aae4424f064da59e945d090f68086e3d
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/120_bytes.txt
+EXPECTED HASH: 07863b54ce694ca5e7e8a15c2fbdad59
+ACTUAL HASH:   07863b54ce694ca5e7e8a15c2fbdad59
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/121_bytes.txt
+EXPECTED HASH: 456ba7f594dc57df3ab8015b959b3917
+ACTUAL HASH:   456ba7f594dc57df3ab8015b959b3917
+MATCHES? -- YES --
+
+TESTING FILE:  ./input/128_bytes.txt
+EXPECTED HASH: 2bcf219635c03d2db06f516b2d605fb0
+ACTUAL HASH:   2bcf219635c03d2db06f516b2d605fb0
+MATCHES? -- YES --
+```
 
 As shown, my implementation produces the correct hash for all 7 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum input/*```, which produces the following output:
 
-**== OUTPUT OF md5sum input/* HERE ==
+```
+d41d8cd98f00b204e9800998ecf8427e  input/0_bytes.txt
+aae4424f064da59e945d090f68086e3d  input/119_bytes.txt
+07863b54ce694ca5e7e8a15c2fbdad59  input/120_bytes.txt
+456ba7f594dc57df3ab8015b959b3917  input/121_bytes.txt
+2bcf219635c03d2db06f516b2d605fb0  input/128_bytes.txt
+2ee1d2ac4ca54921803e3e561ca7160e  input/70_bytes.txt
+a30647b9afd8edab046dc999d5005745  input/7_bytes.txt
+```
 
 After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the md5 hash of that string. Entering *EXIT* exits the application.
 
