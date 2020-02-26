@@ -104,6 +104,22 @@ a30647b9afd8edab046dc999d5005745  input/7_bytes.txt
 
 After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the md5 hash of that string. Entering *EXIT* exits the application.
 
+```
+Enter a string to hash, or EXIT to exit: Hello, World!
+
+Hash value: 65a8e27d8879283831b664bd8b7f0ad4
+
+Enter a string to hash, or EXIT to exit: password123
+
+Hash value: 482c811da5d5b4bc6d497ffa98491e38
+
+Enter a string to hash, or EXIT to exit: EXIT
+
+Hash value: a42b2fb0e720a080e79a92f4ca97d927
+
+ronan@ronan-desktop:~/code/md5$
+```
+
 ## How it Works
 
 MD5 *(message digest 5)* is a hash function, taking an arbitrary length (max 2^64 bits) input and converting it into a 128 bit output, usually represent as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash. These use cases relied on three different properties of MD5:
