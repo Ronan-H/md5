@@ -57,68 +57,77 @@ gcc md5.c main.c -o md5 -lm && ./md5
 The purpose of the application is to demonstrate that it can produce the correct MD5 hash of any input. As such, running the program will first run the MD5 algorithm against all 7 test files in *input/*:
 
 ```
-TESTING FILE:  ./input/0_bytes.txt
+TESTING FILE:  ./test_input/0_bytes.txt
 EXPECTED HASH: d41d8cd98f00b204e9800998ecf8427e
 ACTUAL HASH:   d41d8cd98f00b204e9800998ecf8427e
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/7_bytes.txt
+TESTING FILE:  ./test_input/7_bytes.txt
 EXPECTED HASH: a30647b9afd8edab046dc999d5005745
 ACTUAL HASH:   a30647b9afd8edab046dc999d5005745
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/70_bytes.txt
+TESTING FILE:  ./test_input/70_bytes.txt
 EXPECTED HASH: 2ee1d2ac4ca54921803e3e561ca7160e
 ACTUAL HASH:   2ee1d2ac4ca54921803e3e561ca7160e
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/119_bytes.txt
+TESTING FILE:  ./test_input/119_bytes.txt
 EXPECTED HASH: aae4424f064da59e945d090f68086e3d
 ACTUAL HASH:   aae4424f064da59e945d090f68086e3d
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/120_bytes.txt
+TESTING FILE:  ./test_input/120_bytes.txt
 EXPECTED HASH: 07863b54ce694ca5e7e8a15c2fbdad59
 ACTUAL HASH:   07863b54ce694ca5e7e8a15c2fbdad59
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/121_bytes.txt
+TESTING FILE:  ./test_input/121_bytes.txt
 EXPECTED HASH: 456ba7f594dc57df3ab8015b959b3917
 ACTUAL HASH:   456ba7f594dc57df3ab8015b959b3917
 MATCHES? -- YES --
 
-TESTING FILE:  ./input/128_bytes.txt
+TESTING FILE:  ./test_input/128_bytes.txt
 EXPECTED HASH: 2bcf219635c03d2db06f516b2d605fb0
 ACTUAL HASH:   2bcf219635c03d2db06f516b2d605fb0
 MATCHES? -- YES --
+
+TESTING FILE:  ./test_input/md5.png
+EXPECTED HASH: aee5aa4f28909f16b4924fa5903efcdd
+ACTUAL HASH:   aee5aa4f28909f16b4924fa5903efcdd
+MATCHES? -- YES --
+
+TESTING FILE:  ./test_input/smb_coin.wav
+EXPECTED HASH: a36764134107d0fe6c80bc7fa696fb16
+ACTUAL HASH:   a36764134107d0fe6c80bc7fa696fb16
+MATCHES? -- YES --
 ```
 
-As shown, my implementation produces the correct hash for all 7 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum input/*```, which produces the following output:
+As shown, my implementation produces the correct hash for all 7 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
 ```
-d41d8cd98f00b204e9800998ecf8427e  input/0_bytes.txt
-aae4424f064da59e945d090f68086e3d  input/119_bytes.txt
-07863b54ce694ca5e7e8a15c2fbdad59  input/120_bytes.txt
-456ba7f594dc57df3ab8015b959b3917  input/121_bytes.txt
-2bcf219635c03d2db06f516b2d605fb0  input/128_bytes.txt
-2ee1d2ac4ca54921803e3e561ca7160e  input/70_bytes.txt
-a30647b9afd8edab046dc999d5005745  input/7_bytes.txt
+d41d8cd98f00b204e9800998ecf8427e  test_input/0_bytes.txt
+aae4424f064da59e945d090f68086e3d  test_input/119_bytes.txt
+07863b54ce694ca5e7e8a15c2fbdad59  test_input/120_bytes.txt
+456ba7f594dc57df3ab8015b959b3917  test_input/121_bytes.txt
+2bcf219635c03d2db06f516b2d605fb0  test_input/128_bytes.txt
+2ee1d2ac4ca54921803e3e561ca7160e  test_input/70_bytes.txt
+a30647b9afd8edab046dc999d5005745  test_input/7_bytes.txt
+aee5aa4f28909f16b4924fa5903efcdd  test_input/md5.png
+a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ```
 
 After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the md5 hash of that string. Entering *EXIT* exits the application.
 
 ```shell
 Enter a string to hash, or EXIT to exit: Hello, World!
-
-Hash value: 65a8e27d8879283831b664bd8b7f0ad4
+                         MD5 Hash value: 65a8e27d8879283831b664bd8b7f0ad4
 
 Enter a string to hash, or EXIT to exit: password123
-
-Hash value: 482c811da5d5b4bc6d497ffa98491e38
+                         MD5 Hash value: 482c811da5d5b4bc6d497ffa98491e38
 
 Enter a string to hash, or EXIT to exit: EXIT
-
-Hash value: a42b2fb0e720a080e79a92f4ca97d927
+                         MD5 Hash value: a42b2fb0e720a080e79a92f4ca97d927
 
 ronan@ronan-desktop:~/code/md5$
 ```
