@@ -119,7 +119,7 @@ aee5aa4f28909f16b4924fa5903efcdd  test_input/md5.png
 a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ```
 
-After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the md5 hash of that string. Entering *EXIT* exits the application.
+After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
 
 ```shell
 Enter a string to hash, or EXIT to exit: Hello, World!
@@ -171,7 +171,7 @@ Here is how it works all together:
 6. Use bitwise operations to represent the input length in the last 8 bytes.
 7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. This was one of the most confusing aspects of the assignment to get right.
 
-From there, the blocks are fed straight into the md5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says to do in pseudocode, I just had to translate it into C code.
+From there, the blocks are fed straight into the MD5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says to do in pseudocode, I just had to translate it into C code.
 
 ### Fixing Bugs and Finishing Up
 Once I was able to get a hash value out, the last step to the algorithm was fixing all the bugs. These were mostly typos, which isn't surprising, since there were so many values to copy from the RFC. Because of how hashing works, the hash value is *completely different* to the expected value if *anything* is wrong, even if a single bit is out of place. This is because of the [avalanche effect](https://en.wikipedia.org/wiki/Avalanche_effect). I had also gotten the *endianness* wrong when constructing a *word* value from 4 bytes. Eventually though, the hash came out right, and from there it was just a case of cleaning up and refactoring the code, allowing the user to enter their own input to be hashed, etc.
