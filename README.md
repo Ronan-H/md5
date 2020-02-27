@@ -119,7 +119,7 @@ aee5aa4f28909f16b4924fa5903efcdd  test_input/md5.png
 a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ```
 
-After that, the user is free to enter any string they want into the console (arbitrarily limited to 100 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
+After that, the user is free to enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
 
 ```shell
 Enter a string to hash, or EXIT to exit: Hello, World!

@@ -312,6 +312,7 @@ void testFileHash(char *filePath, char *expectedHash) {
     printf("ACTUAL HASH:   %s\n", actualHash);
     printf("MATCHES? -- %s --\n\n", (matches ? "YES" : "NO "));
 
+    // free memory allocated to the hash value
     free(actualHash);
 }
 
