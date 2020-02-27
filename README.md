@@ -103,7 +103,9 @@ ACTUAL HASH:   a36764134107d0fe6c80bc7fa696fb16
 MATCHES? -- YES --
 ```
 
-As shown, my implementation produces the correct hash for all 9 test files. The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
+As shown, my implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths.
+
+The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
 ```
 d41d8cd98f00b204e9800998ecf8427e  test_input/0_bytes.txt
@@ -143,11 +145,13 @@ MD5 collisions have been found and used as an attack vector, and a theoretical p
 
 ## How I Wrote it
 
-### Getting Started
-I mostly followed the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) which specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to help me follow it. Instead of storing the input bytes *M* in one big array, I stored them in a 2D array of *word* blocks. This is probably slightly less efficient but in my view it is a more elegant solution. I began by defining some easy *funtion-like* macros, such as F(), G(), H() and I(). These were pretty easy to implement, as it was just a matter of translating the mathematical functions given in the RFC into C code.
+### Research
+I was mostly able to just follow the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) to complete the assignment, which fully specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to make it easier for me to follow along. I found I didn't really need to do too much research to complete the assignment, as the C concepts I used were taught to us across two modules (Procedural Programming, Advanced Procedural Programming) in second year. There were a few things I didn't know how to do in C, or had forgotten how to do, such as allocating memory with *malloc*, and using ```sprintf()``` to store a formatted string in a *char* array. Any time I needed help like this, I included a comment in my code to the webpage I used to help me along (usually a Stack Overflow answer). I am also already used to working with bytes and using bitwise operations, such as in [this](https://github.com/Ronan-H/four-square-cipher/blob/master/src/ie/gmit/sw/Cipher.java) assignment I did, so there wan't anything I needed to research there. This was the first time I had to consider *endianness* in a project though, which I found very confusing, but again I was able to just read the RFC to make sure that the bits/bytes were being ordered correctly.
 
-### Running into Difficulties
-After that, though, it got a lot more difficult. I decided I would use a file as input to the hashing functon. I had to look up how to read an entire file into memory in C, stored in a byte array. Originally, I decided to store blocks in a linked list. This worked, however writing the padding code proved to be difficult to do elegantly and efficiently. Another mistake I made was not calculating how many blocks were needed ahead of time. This makes inserting the padding a lot harder, since you have to dymanically add blocks as you read the file buffer, and figuring out the padding was also hard.
+### Getting Started, and Running into Difficulties
+I began by defining some easy *funtion-like* macros, such as F(), G(), H() and I(). These were pretty easy to implement, as it was just a matter of translating the mathematical functions given in the RFC into C code.
+
+After that, though, it got a lot more difficult. I decided I would use a file as input to the hashing functon. I had to look up how to read an entire file into memory in C, stored in a byte array. Originally, I decided to store blocks in a linked list. This worked, however writing the padding code proved to be difficult to do elegantly and efficiently. Another mistake I made was not calculating how many blocks were needed ahead of time. This makes inserting the padding a lot harder, since you have to dymanically add blocks as you read the file buffer.
 
 ### Making Things Easier
 Eventually, I decided that a 2 dimensional array of *word*s would be the best way of representing a series of blocks. This makes it easier to iterate over the values in each block. Also, I decided that the padding bits should be added to the input message *before* converting the input into blocks, not after.
