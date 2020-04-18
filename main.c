@@ -1,6 +1,7 @@
 #include "md5.h"
 #include <getopt.h>
 
+void displayHelp();
 void runHashInputLoop();
 
 // command line options
@@ -35,8 +36,8 @@ int main(int argc, char **argv) {
     }
 
     // command line argument precedence and restrictions
-    // restriction: 'hash' and 'crack' can not both be used
-    // precedence: 'hash' will be used if both are specified
+    // restriction: only one of 'hash' and 'crack' can be used
+    // precedence: hash, crack
     if (hashFlag) {
         crackFlag = 0;
     }
@@ -51,17 +52,36 @@ int main(int argc, char **argv) {
     if (hashFlag) puts("Hash flag was set");
     if (crackFlag) puts("Crack flag was set");
 
-    // run test suite if 'test' flag was given
+    // displays a help message if the 'help' option was given
+    if (helpFlag) {
+        displayHelp();
+    }
+
+    // run test suite if the 'test' flag option given
     if (testFlag) {
         runTestSuite();
     }
 
-    // run hash input loop if 'hash' flag was given
+    // run hash input loop if the 'hash' option was given
     if (hashFlag) {
         runHashInputLoop();
     }
 
     return 0;
+}
+
+void displayHelp() {
+    // usage based on the NetBSD source code style guide
+    puts("\nUsage: ./md5 [--test] [--help] [--hash | --crack]");
+
+    puts("  Default argument if no option is specified: --hash\n");
+    puts("Options:");
+    puts("  --help:  displays this help message");
+    puts("  --test:  runs the suite of tests against the MD5 algorithm");
+    puts("  --hash:  hashes user input in a loop (DEFAULT OPTION)");
+    puts("  --crack: runs the MD5 cracking utility\n");
+    puts("Note: only one of --help, --hash, or --crack will be used, in that order");
+    puts("      (--test and --help can be used alongside any other option, or on their own)\n");
 }
 
 void runHashInputLoop() {
