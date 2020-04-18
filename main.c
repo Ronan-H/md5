@@ -1,6 +1,46 @@
 #include "md5.h"
+#include <getopt.h>
 
-int main() {
+// command line options
+// ref: https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Options.html
+// ref: https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html
+// (I also used other similar getopt manuals on gnu.org)
+static int helpFlag;
+static int testFlag;
+static int crackFlag;
+
+static struct option long_options[] =
+{
+    // all three of these options just set a flag
+    {"help", no_argument, &helpFlag, 1},
+    {"test", no_argument, &testFlag, 1},
+    {"crack", no_argument, &crackFlag, 1},
+    // "terminate the array with an element containing all zeros"
+    {0, 0, 0, 0}
+};
+
+int main(int argc, char **argv) {
+    // parse command line arguments
+    // (just settings flags, so there's not much to do here)
+    int optionIndex;
+    int c = 0;
+
+    while (c != -1) {
+        c = getopt_long_only(argc, argv, "", long_options, &optionIndex);
+    }
+
+    if (helpFlag) {
+        puts("Help flag is set");
+    }
+
+    if (testFlag) {
+        puts("Test flag is set");
+    }
+
+    if (crackFlag) {
+        puts("Crack flag is set");
+    }
+
     runTestSuite();
 
     char inputStr[1002];
