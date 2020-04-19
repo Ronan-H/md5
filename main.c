@@ -49,11 +49,6 @@ int main(int argc, char **argv) {
         hashFlag = 1;
     }
 
-    if (helpFlag) puts("Help flag was set");
-    if (testFlag) puts("Test flag was set");
-    if (hashFlag) puts("Hash flag was set");
-    if (crackFlag) puts("Crack flag was set");
-
     // displays a help message if the 'help' option was given
     if (helpFlag) {
         displayHelp();
@@ -71,7 +66,7 @@ int main(int argc, char **argv) {
 
     // run crack utility if the 'crack' option was given
     if (crackFlag) {
-        runCrackUtility();
+        runCrackUtility(15);
     }
 
     return 0;
@@ -152,6 +147,27 @@ bool bruteForcePermutations(int length, int index, char *buffer, char *refHash) 
     return false;
 }
 
-void runCrackUtility() {
-    char buffer[15];
+void runCrackUtility(int maxLength) {
+    char refHash[33];
+    char buffer[maxLength];
+
+    // get reference hash from user
+    puts("\nExpected plaintext alpahbet: [a-z]*");
+    printf("Trying up to plaintext length: %d\n", maxLength);
+    puts("Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592\n");
+    printf("Enter a reference MD5 hash to crack: ");
+    fgets(refHash, 33, stdin);
+    puts("\nCracking...\n");
+
+    // try all permutations for all lengths of string, up to maxLength
+    for (int len = 0; len < maxLength; len++) {
+        printf("Trying all permutations of length %d...\n", len);
+        bool matchFound = bruteForcePermutations(len, len - 1, buffer, refHash);
+
+        if (matchFound) {
+            printf("\nMatch found!\n  Result: '%s'\n", buffer);
+            puts("\nExiting...\n");
+            return;
+        }
+    }
 }
