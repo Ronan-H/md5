@@ -1,5 +1,6 @@
 #include "md5.h"
 #include <getopt.h>
+#include <sys/time.h>
 
 void displayHelp();
 void runHashInputLoop();
@@ -66,8 +67,10 @@ int main(int argc, char **argv) {
 
     // run crack utility if the 'crack' option was given
     if (crackFlag) {
-        runCrackUtility(15);
+        runCrackUtility(5);
     }
+
+    puts("Exiting...\n");
 
     return 0;
 }
@@ -123,13 +126,18 @@ void runHashInputLoop() {
 
 bool bruteForcePermutations(int length, int index, char *buffer, char *refHash) {
     if (index < 0) {
-        // hash string and compare
+        // finished generating string; hash string and compare
         Blocks *blocks = makeBlocks(buffer, length);
         char *hash = md5(blocks);
 
+        // check for a match
+        bool match = isHashEqual(hash, refHash);
+        if (match) {
+            // append null terminator to result
+            buffer[length] = '\0';
+        }
         // propagate match result
-        // (if there's a match, the result is in the buffer)
-        return isHashEqual(hash, refHash);
+        return match;
     }
 
     // try all permutations of character at the next index
@@ -149,25 +157,36 @@ bool bruteForcePermutations(int length, int index, char *buffer, char *refHash) 
 
 void runCrackUtility(int maxLength) {
     char refHash[33];
-    char buffer[maxLength];
+    char buffer[maxLength + 1];
+    struct timeval stop, start;
+    long timeTaken;
 
     // get reference hash from user
-    puts("\nExpected plaintext alpahbet: [a-z]*");
-    printf("Trying up to plaintext length: %d\n", maxLength);
-    puts("Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592\n");
+    puts("Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592");
+    puts("Expected plaintext alpahbet: [a-z]*");
+    printf("Trying up to plaintext length: %d\n\n", maxLength);
     printf("Enter a reference MD5 hash to crack: ");
     fgets(refHash, 33, stdin);
     puts("\nCracking...\n");
 
     // try all permutations for all lengths of string, up to maxLength
-    for (int len = 0; len < maxLength; len++) {
+    for (int len = 0; len <= maxLength; len++) {
         printf("Trying all permutations of length %d...\n", len);
+        // checking system time in C: https://stackoverflow.com/a/10192994
+        gettimeofday(&start, NULL);
         bool matchFound = bruteForcePermutations(len, len - 1, buffer, refHash);
+        gettimeofday(&stop, NULL);
 
         if (matchFound) {
-            printf("\nMatch found!\n  Result: '%s'\n", buffer);
-            puts("\nExiting...\n");
+            printf("\nMatch found!\n  Result: '%s'\n\n", buffer);
             return;
         }
+        else {
+            // print time taken to exhaust all permutations of length 'len'
+            timeTaken = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
+            printf("  No match, took %lu microseconds\n\n", timeTaken); 
+        }
     }
+
+    puts("No match found!");
 }
