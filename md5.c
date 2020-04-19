@@ -317,7 +317,7 @@ void testFileHash(char *filePath, char *expectedHash) {
 }
 
 void runTestSuite() {
-    printf("\n");
+    printf("\n----------------- TEST SUITE ------------------\n\n");
 
     // test files (text) for edge cases
     // empty file
