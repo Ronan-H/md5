@@ -166,6 +166,16 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
     ull totalBytes;
     ull totalBits;
 
+    // copy input bytes to leave input array unchanged,
+    // leaving some extra space for any amount of padding needed at the end
+    
+    // TODO figure out he max possible number of padding bytes instead of adding
+    // and arbitrary number here
+    ubyte buffer[length + 100];
+    for (int i = 0; i < length; i++) {
+        buffer[i] = bytes[i];
+    }
+
     // compute exact number of padding bytes needed
     paddingBytes = 65 - ((length + 8) % 64 + 1);
     // total number of bytes needed for all blocks (a multiple of 64)
@@ -175,17 +185,17 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
     
     // start padding with a 1
     p = length;
-    bytes[p++] = FIRST_PADDING_BYTE;
+    buffer[p++] = FIRST_PADDING_BYTE;
 
     // rest of the padding is 0s
     for (; p < totalBytes - 8; p++) {
-        bytes[p] = 0;
+        buffer[p] = 0;
     }
 
     // append 8 bytes describing input length (least significant byte first)
     shiftPlaces = 0;
     for (; p < totalBytes; p++) {
-        bytes[p] = (totalBits >> shiftPlaces) & 0xffff;
+        buffer[p] = (totalBits >> shiftPlaces) & 0xffff;
         shiftPlaces += 8;
     }
 
@@ -214,7 +224,7 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
         for (int j = 0; j < 16; j++) {
             // combine 4 bytes into a word (little-endian, as per the RFC)
             // and write the word to the block at the next index
-            currBlock[j] = bytes[p++] | (bytes[p++] << 8) | (bytes[p++] << 16) | (bytes[p++] << 24);
+            currBlock[j] = buffer[p++] | (buffer[p++] << 8) | (buffer[p++] << 16) | (buffer[p++] << 24);
         }
     }
 

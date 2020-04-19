@@ -3,6 +3,8 @@
 
 void displayHelp();
 void runHashInputLoop();
+void runCrackUtility();
+bool bruteForcePermutations(int length, int index, char *buffer, char *refHash);
 
 // command line options
 // ref: https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Options.html
@@ -67,6 +69,11 @@ int main(int argc, char **argv) {
         runHashInputLoop();
     }
 
+    // run crack utility if the 'crack' option was given
+    if (crackFlag) {
+        runCrackUtility();
+    }
+
     return 0;
 }
 
@@ -86,7 +93,6 @@ void displayHelp() {
 
 void runHashInputLoop() {
     char inputStr[1002];
-    char inputStrCopy[1100];
     char *pos;
     char *hash;
     int strLen = 0;
@@ -108,9 +114,7 @@ void runHashInputLoop() {
             }
         }
 
-        // copy input since makeBlocks() changes it
-        strcpy(inputStrCopy, inputStr);
-        blocks = makeBlocks(inputStrCopy, strLen);
+        blocks = makeBlocks(inputStr, strLen);
         // generate hash and display to the user
         // (even if it was EXIT, maybe they wanted to know what the hash of EXIT is before exiting)
         hash = md5(blocks);
@@ -120,4 +124,34 @@ void runHashInputLoop() {
     // free allocated memory
     // (blocks etc. have already been freed in md5())
     free(hash);
+}
+
+bool bruteForcePermutations(int length, int index, char *buffer, char *refHash) {
+    if (index < 0) {
+        // hash string and compare
+        Blocks *blocks = makeBlocks(buffer, length);
+        char *hash = md5(blocks);
+
+        // propagate match result
+        // (if there's a match, the result is in the buffer)
+        return isHashEqual(hash, refHash);
+    }
+
+    // try all permutations of character at the next index
+    for (char c = 'a'; c <= 'z'; c++) {
+        buffer[index] = c;
+        bool match = bruteForcePermutations(length, index - 1, buffer, refHash);
+
+        if (match) {
+            // propagate match found
+            return true;
+        }
+    }
+
+    // tried all permutations at this index without a match
+    return false;
+}
+
+void runCrackUtility() {
+    char buffer[15];
 }
