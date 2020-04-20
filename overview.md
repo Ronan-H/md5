@@ -207,8 +207,13 @@ Although directly reversing a hash function is impossible, you can still repeate
 
 Although this attack is simple, the time complexity of it makes it infeasible in a lot of situations. Every extra bit which you are brute-forcing *doubles* the number of hashes needed to exhaust all permutations. This implies a time complexity to the order of **O(2<sup>n</sup>)**. This is one of the **worst** time complexities you can have. Just to brute-force input to the MD5 algorithm that produces a single block of (512 bits), you would have to generate and compare 2<sup>512</sup> hash values, which is massive number and completely infeasible.
 
-However, in the case of password cracking, permutations bits do not need to be exhausted entirely. This is because only some permutations of bits actually represent a string of charaters. In the case of the cracking utility created for this project, only the letters a-z are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *n* denotes the *size of the alphabet* (in this case, 26 lowercase letters), and *n* donates the *length of the string*. For example, to brute-force strings of length 3 from an alphabet a-z, at worst it would take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can actually be computed quite fast, strings of this length can actually be cracked quite quickly.
+However, in the case of password cracking, permutations bits do not need to be exhausted entirely. This is because only some permutations of bits actually represent a string of charaters. In the case of the cracking utility created for this project, only the letters a-z are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *n* denotes the *size of the alphabet* (in this case, 26 lowercase letters), and *n* donates the *length of the string*. For example, to brute-force strings of length 3 from an alphabet a-z, at worst it would take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can actually be computed quite fast, strings of this length can actually be cracked quite quickly. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this still simplifies down to **O(26<sup>n</sup>)**.
 
-(CONTINUE HERE)
+**(do a matplotlib plot showing the increase in time taken to exhaust all permutations of strings of length *n* for *n* of length 0 to 5)**
+
+That's just one method of reversing a hashed string, though. In the area of password cracking, there are more powerful methods.
+
+### Trading space for time
+**(write about lookup tables etc. here)**
 
 ## References
