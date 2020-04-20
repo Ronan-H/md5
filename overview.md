@@ -201,5 +201,14 @@ The overall running time of the hashing algorithm is then the worst complexity o
 As predicted above, the algorithm as a whole runs in **O(n)** time, and **O(n)** space. It also seems that **a secure hashing algorithm can not run better than *O(n)* time**, since every byte has to be used in some operation. If any input byte was ignored, a change to those bytes would **not change the output of the algorithm**, producing a **collision**. 
 
 ## Complexity of algorithms that can reverse MD5
+One of the main features of hashing algorithms is that they are *one-way*: for some value *x*, computing *f(x)* is "easy", I.e. it can be done in a feasible amount of time, for any *x*. However, given a value *f(x)*, reversing the function to compute *x* is impossible. This can be easily seen because the hash *f(x)* is of fixed length, and the input can be *any length*, so some *x* values must map to the same value *f(x)*. As such, how can you reverse *f(x)* if there are multiple possible inputs it could have been?
+
+Although directly reversing a hash function is impossible, you can still repeatedly hash different inputs until you found a hash that matches the one you're trying to reverse. If a match is found, the input you hashed is likely to be the same as the reference hash's input. This style of attack is known as brute-force, and is the simplest form of attack, akin to trying all the combinations on someone's luggage lock (000, 001, 002, ... 999).
+
+Although this attack is simple, the time complexity of it makes it infeasible in a lot of situations. Every extra bit which you are brute-forcing *doubles* the number of hashes needed to exhaust all permutations. This implies a time complexity to the order of **O(2<sup>n</sup>)**. This is one of the **worst** time complexities you can have. Just to brute-force input to the MD5 algorithm that produces a single block of (512 bits), you would have to generate and compare 2<sup>512</sup> hash values, which is massive number and completely infeasible.
+
+However, in the case of password cracking, permutations bits do not need to be exhausted entirely. This is because only some permutations of bits actually represent a string of charaters. In the case of the cracking utility created for this project, only the letters a-z are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *n* denotes the *size of the alphabet* (in this case, 26 lowercase letters), and *n* donates the *length of the string*. For example, to brute-force strings of length 3 from an alphabet a-z, at worst it would take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can actually be computed quite fast, strings of this length can actually be cracked quite quickly.
+
+(CONTINUE HERE)
 
 ## References
