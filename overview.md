@@ -177,6 +177,28 @@ Once the input has been processed into blocks, or at least into a format that ca
    3. Add AA to A, BB to B, and so on. Here, hashed data from the current round accumulates with hashed data from all previous rounds.
 
 ## Complexity of MD5
+Hashing algorithms are useful in a variety of ways, including password hashing, and hashing files to verify that they have remained unchanged. In the latter use case mentioned, input to the MD5 algorithm could potentially be *very large*. For example, consider somebody downloading a copy of Linux Mint. The ISO file they download would be about 2 gigabytes in size. In the case of downloading operating systems, it is strongly advised to verify the integrity of the ISO file before installing, as installing a compromised OS would be catastrophic.
+
+We will call the number of bytes which the MD5 algorithm has to process *n*. So, in this case, the input is 31,250,000 bytes long, so *n* is 31,250,000. As we can see, this an enormous number, so for MD5 to be useful as a hashing algorithm, we would want it to run with a time and space complexity of **O(n) time or bettter**. Any complexity worse than this would surely be too slow, or take up too much memory for larger inputs.
+
+With that in mind, let's take a look at the space and time complexity of MD5.
+
+**Building blocks**
+
+1. Computing the number of padding bytes needed, appending the first bit of padding...: this is a **constant time** operation, running in **O(1)** space and time. In other words, no mater what the input is, these operations take the same amount of time, and the same amount of space.
+2. Appending the padding bits set to 0: this is difficult to classify, since the number of padding bits needed **changes depending on *n***, and is not proportional to the size of the input. However, since there is a small upper bound on the number of padding bits which are needed which varying lengths of input, I would say this step  could be approximated to **O(1)** space and time.
+3. Copying the input array into a series of "word" blocks: every byte of input must be individually copied to a block, and doing so uses array accesses and bitwise operations which run in constant time, so the overall time taken for this operation is **O(n)**. In a similar way, one byte of extra space is needed for every byte of input, so this also uses **O(n)** space.
+
+The overall runtime of building blocks is the **worst** space and time complexity from the whole process, meaning a space and time complexity of **O(n)** overall.
+
+**Hashing**
+1. Computing T[]: calculates T[i] for **64** indices regardless of input, using 4 bytes of memory for each index. This means this is a **constant time and space** operation, or **O(1)** for both.
+2. Initialising the MD buffer A, B, C, D: again, this is the same regardless of input, so it must be a **O(1)** operation for both space and time.
+3. For every *block*, runs 4 rounds of 16 operations. This runs a *fixed number* of operations per block. Therefore, it runs in **O(n)**, where *n* denotes the number of **blocks** this time, not **input bytes**. The implication of that is that in cases where the input is longer but the number of blocks remains the same, MD5 runs in the same amount of time. Also, no extra memory is needed in this loop, it just uses existing data strucutres. Therefore, it uses "constant extra space" for all iterations of the loop, meaning **O(1) space complexity**.
+
+The overall running time of the hashing algorithm is then the worst complexity of those steps, so it runs in **O(n)** time, but uses **O(1)** extra space, since the blocks are already supplied from the previous step
+
+As predicted above, the algorithm as a whole runs in **O(n)** time, and **O(n)** space. It also seems that **a secure hashing algorithm can not run better than *O(n)* time**, since every byte has to be used in some operation. If any input byte was ignored, a change to those bytes would **not change the output of the algorithm**, producing a **collision**. 
 
 ## Complexity of algorithms that can reverse MD5
 
