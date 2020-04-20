@@ -147,3 +147,37 @@ Match found!
 Exiting...
 ```
 
+## Algorithms used
+Producing an MD5 hash can be broken down into two separate algorithms: one to manipulate the input to be of the format that the hashing algorithm expects, and the MD5 hashing algorithm itself. MD5 expects the input to be in the form of fixed length **blocks**, where each block is exactly 512 bits long. To fill up any extra space, and to ensure that doing so does not compromise the security of the hash, a padding scheme is used to fill up the rest of the space in the blocks (I.e., appending bits set to 0 for the remainder of the output is **not good enough**).
+
+Here is a breakdown of how I converted a simple array of input bytes into a format which is usable for the MD5 hashing algorithm:
+
+### Constructing Blocks, Step by Step
+1. Compute the exact number of padding bytes needed to append to the message.
+   * For this I came up with the formula ```paddingBytes = 65 - ((length + 8) % 64 + 1);```
+2. Compute the total number of bytes needed for the byte buffer: ```totalBytes = length + paddingBytes + 8;```
+   * 8 bytes are needed at the end to represent the input length; a 64 bit unsigned integer. This is specified in the padding scheme, outlined in the RFC.
+   * ```totalBytes``` is now guaranteed to be evenly divisible by 64, i.e. full blocks can be constructed with no bytes left over.
+3. Create a byte array ```buffer``` with length ```totalBytes```. Read the entire file into this array. There will be space left over for padding and input length bytes.
+4. Append the first bit of padding, a 1. This is easy now, we just write the integer 128 to the above array. 128 represents 1 followed by 7 zeroes in binary.
+5. Write all the remaining 0's of padding. Again, this is pretty easy. We're just filling the rest of the array with 0's, **up until we reach the 8 bytes of input length at the end**. We could write 0's here but we're just about to write the input length there anyway.
+6. Use bitwise operations to represent the input length in the last 8 bytes.
+7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. This was one of the most confusing aspects of the assignment to get right.
+
+Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimensions array of bytes, where each chunk of 64 bytes can be viewed as an invividual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
+
+### Producing the hash value using MD5
+1. Generate T[]. *"Let T[i] denote the i-th element of the table, which
+   is equal to the integer part of 4294967296 times abs(sin(i)), where i
+   is in radians*". Some implementations of MD5 hard code these values, but I prefer to generate them in a loop.
+2. Initialise the "MD Buffer": four 32-bit "word" values A, B, C, and D, where each variable gets a specific, prefefined value. Values will be added to these after each round, and afterwards, these values make up the hash value itself.
+3. Process each block in turn. In my implementation, this is simply a loop through Each block X, from the array of blocks M.
+   1. Initialise variables AA, BB, CC, and DD, initialised to A, B , C and D respectively.
+   2. Manipulate A, B, C, and D, in a series of four "rounds", each with sixteen individual operations. These incorporate bytes from the current block X, values from T in ascending order of index, and bitwise logic defined in the auxiliary functions F(), G(), H(), and I. In these steps, the input bytes get scrambled in a way that is irreversible.
+   3. Add AA to A, BB to B, and so on. Here, hashed data from the current round accumulates with hashed data from all previous rounds.
+
+## Complexity of MD5
+
+## Complexity of algorithms that can reverse MD5
+
+## References

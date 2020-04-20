@@ -82,18 +82,7 @@ Eventually, I decided that a 2 dimensional array of *word*s would be the best wa
 
 Using these ideas makes the file reading, padding, and block building steps fairly straight forward.
 
-### Constructing Blocks, Step by Step
-Here is how it works all together:
-1. Compute the exact number of padding bytes needed to append to the message.
-   * For this I came up with the formula ```paddingBytes = 65 - ((length + 8) % 64 + 1);```
-2. Compute the total number of bytes needed for the byte buffer: ```totalBytes = length + paddingBytes + 8;```
-   * 8 bytes are needed at the end to represent the input length; a 64 bit unsigned integer.
-   * ```totalBytes``` is now guaranteed to be evenly divisible by 64, i.e. full blocks can be constructed with no bytes left over.
-3. Create a byte array ```buffer``` with length ```totalBytes```. Read the entire file into this array. There will be space left over for padding and input length bytes.
-4. Append the first bit of padding, a 1. This is easy now, we just write the integer 128 to the above array. 128 represents 1 followed by 7 zeroes in binary.
-5. Write all the remaining 0's of padding. Again, this is pretty easy. We're just filling the rest of the array with 0's, **up until we reach the 8 bytes of input length at the end**. We could write 0's here but we're just about to write the input length there anyway.
-6. Use bitwise operations to represent the input length in the last 8 bytes.
-7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. This was one of the most confusing aspects of the assignment to get right.
+
 
 From there, the blocks are fed straight into the MD5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says to do in pseudocode, I just had to translate it into C code.
 
