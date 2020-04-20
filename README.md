@@ -1,7 +1,7 @@
 # MD5
 
 ## Notice about 
-Since the completion of the COVID-19 rescoped version to this project, some content from this README has been changed or moved to [overview.md](overview.md) to reflect the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
+Since the completion of the COVID-19 rescoped version to this project, some content from this README has been changed or moved to [overview.md](overview.md) to reflect the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
 
 ---
 

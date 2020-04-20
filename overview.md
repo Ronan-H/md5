@@ -30,7 +30,7 @@ Exiting...
 
 
 ## Option: --test
-The purpose of the application is to demonstrate that it can produce the correct MD5 hash of any input. As such, running the program will first run the MD5 algorithm against all 9 test files in *test_input/*:
+The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
 
 ```
 TESTING FILE:  ./test_input/0_bytes.txt
@@ -79,7 +79,7 @@ ACTUAL HASH:   a36764134107d0fe6c80bc7fa696fb16
 MATCHES? -- YES --
 ```
 
-As shown, my implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths.
+As shown, the implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths.
 
 The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
@@ -95,7 +95,8 @@ aee5aa4f28909f16b4924fa5903efcdd  test_input/md5.png
 a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ```
 
-After that, the user is free to enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
+## Option: --hash
+If the ```--hash``` option is given, or if no option is given, the user can enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
 
 ```shell
 Enter a string to hash, or EXIT to exit: Hello, World!
@@ -108,5 +109,41 @@ Enter a string to hash, or EXIT to exit: EXIT
                          MD5 Hash value: a42b2fb0e720a080e79a92f4ca97d927
 
 ronan@ronan-desktop:~/code/md5$
+```
+
+## Option --crack
+As a talking point for this document, I have also added the ```--crack``` option. When this option is given, the user can enter any MD5 hash, and the program will attempt to reverse it. The time taken to brute-force every permutation of characters for a certain length is shown, to demonstrate that the time taken to crack hashes in this fashion grows exponentially with the size of the input.
+
+```shell
+ronan@ronan-desktop:~/code/md5$ ./md5 --crack
+Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592
+Expected plaintext alpahbet: [a-z]*
+Trying up to plaintext length: 5
+
+Enter a reference MD5 hash to crack: 5d41402abc4b2a76b9719d911017c592
+
+Cracking...
+
+Trying all permutations of length 0...
+  No match, took 42 microseconds
+
+Trying all permutations of length 1...
+  No match, took 197 microseconds
+
+Trying all permutations of length 2...
+  No match, took 4831 microseconds
+
+Trying all permutations of length 3...
+  No match, took 55555 microseconds
+
+Trying all permutations of length 4...
+  No match, took 1233622 microseconds
+
+Trying all permutations of length 5...
+
+Match found!
+  Result: 'hello'
+
+Exiting...
 ```
 
