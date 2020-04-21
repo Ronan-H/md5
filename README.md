@@ -1,5 +1,10 @@
 # MD5
 
+## Notice about 
+Since the completion of the COVID-19 rescoped version to this project, some content from this README has been changed or moved to [overview.md](overview.md) to reflect the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
+
+---
+
 ## Table of Contents
  * [Files](#files)
  * [How to Compile and Run](#how-to-compile-and-run)
@@ -53,87 +58,6 @@ gcc md5.c main.c -o md5 -lm
 gcc md5.c main.c -o md5 -lm && ./md5
 ```
 
-## What it Does, and Testing
-The purpose of the application is to demonstrate that it can produce the correct MD5 hash of any input. As such, running the program will first run the MD5 algorithm against all 9 test files in *test_input/*:
-
-```
-TESTING FILE:  ./test_input/0_bytes.txt
-EXPECTED HASH: d41d8cd98f00b204e9800998ecf8427e
-ACTUAL HASH:   d41d8cd98f00b204e9800998ecf8427e
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/7_bytes.txt
-EXPECTED HASH: a30647b9afd8edab046dc999d5005745
-ACTUAL HASH:   a30647b9afd8edab046dc999d5005745
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/70_bytes.txt
-EXPECTED HASH: 2ee1d2ac4ca54921803e3e561ca7160e
-ACTUAL HASH:   2ee1d2ac4ca54921803e3e561ca7160e
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/119_bytes.txt
-EXPECTED HASH: aae4424f064da59e945d090f68086e3d
-ACTUAL HASH:   aae4424f064da59e945d090f68086e3d
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/120_bytes.txt
-EXPECTED HASH: 07863b54ce694ca5e7e8a15c2fbdad59
-ACTUAL HASH:   07863b54ce694ca5e7e8a15c2fbdad59
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/121_bytes.txt
-EXPECTED HASH: 456ba7f594dc57df3ab8015b959b3917
-ACTUAL HASH:   456ba7f594dc57df3ab8015b959b3917
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/128_bytes.txt
-EXPECTED HASH: 2bcf219635c03d2db06f516b2d605fb0
-ACTUAL HASH:   2bcf219635c03d2db06f516b2d605fb0
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/md5.png
-EXPECTED HASH: aee5aa4f28909f16b4924fa5903efcdd
-ACTUAL HASH:   aee5aa4f28909f16b4924fa5903efcdd
-MATCHES? -- YES --
-
-TESTING FILE:  ./test_input/smb_coin.wav
-EXPECTED HASH: a36764134107d0fe6c80bc7fa696fb16
-ACTUAL HASH:   a36764134107d0fe6c80bc7fa696fb16
-MATCHES? -- YES --
-```
-
-As shown, my implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths.
-
-The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
-
-```
-d41d8cd98f00b204e9800998ecf8427e  test_input/0_bytes.txt
-aae4424f064da59e945d090f68086e3d  test_input/119_bytes.txt
-07863b54ce694ca5e7e8a15c2fbdad59  test_input/120_bytes.txt
-456ba7f594dc57df3ab8015b959b3917  test_input/121_bytes.txt
-2bcf219635c03d2db06f516b2d605fb0  test_input/128_bytes.txt
-2ee1d2ac4ca54921803e3e561ca7160e  test_input/70_bytes.txt
-a30647b9afd8edab046dc999d5005745  test_input/7_bytes.txt
-aee5aa4f28909f16b4924fa5903efcdd  test_input/md5.png
-a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
-```
-
-After that, the user is free to enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
-
-```shell
-Enter a string to hash, or EXIT to exit: Hello, World!
-                         MD5 Hash value: 65a8e27d8879283831b664bd8b7f0ad4
-
-Enter a string to hash, or EXIT to exit: password123
-                         MD5 Hash value: 482c811da5d5b4bc6d497ffa98491e38
-
-Enter a string to hash, or EXIT to exit: EXIT
-                         MD5 Hash value: a42b2fb0e720a080e79a92f4ca97d927
-
-ronan@ronan-desktop:~/code/md5$
-```
-
 ## How it Works
 
 MD5 *(message digest 5)* is a hash function, taking an arbitrary number of bits as input and converting it into 128 bits of output, represented as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords, to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash. These use cases mainly relied on two different properties of MD5:
@@ -158,18 +82,7 @@ Eventually, I decided that a 2 dimensional array of *word*s would be the best wa
 
 Using these ideas makes the file reading, padding, and block building steps fairly straight forward.
 
-### Constructing Blocks, Step by Step
-Here is how it works all together:
-1. Compute the exact number of padding bytes needed to append to the message.
-   * For this I came up with the formula ```paddingBytes = 65 - ((length + 8) % 64 + 1);```
-2. Compute the total number of bytes needed for the byte buffer: ```totalBytes = length + paddingBytes + 8;```
-   * 8 bytes are needed at the end to represent the input length; a 64 bit unsigned integer.
-   * ```totalBytes``` is now guaranteed to be evenly divisible by 64, i.e. full blocks can be constructed with no bytes left over.
-3. Create a byte array ```buffer``` with length ```totalBytes```. Read the entire file into this array. There will be space left over for padding and input length bytes.
-4. Append the first bit of padding, a 1. This is easy now, we just write the integer 128 to the above array. 128 represents 1 followed by 7 zeroes in binary.
-5. Write all the remaining 0's of padding. Again, this is pretty easy. We're just filling the rest of the array with 0's, **up until we reach the 8 bytes of input length at the end**. We could write 0's here but we're just about to write the input length there anyway.
-6. Use bitwise operations to represent the input length in the last 8 bytes.
-7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. This was one of the most confusing aspects of the assignment to get right.
+
 
 From there, the blocks are fed straight into the MD5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says to do in pseudocode, I just had to translate it into C code.
 
