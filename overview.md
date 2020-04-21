@@ -226,11 +226,17 @@ The approximate straight line indicates that values on the y-axis follow the lin
 * **log<sub>26</sub>(26<sup>2</sup>) = 2**
 * ...
 
-
+It is important to note that the irregularities in the timer values are because **timing code execution speed is not reliable**, in this case, especially for shorter string lengths, which are brute-forced extremely quickly. 
 
 That's just one method of reversing a hashed string, though. In the area of password cracking, there are more powerful methods.
 
 ### Trading space for time
-**(write about lookup tables etc. here)**
+In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing *n* values. However, it can be seem that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
+
+#### Lookup tables
+
+#### Reverse lookup tables
+
+#### Rainbow tables
 
 ## References
