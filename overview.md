@@ -111,7 +111,7 @@ Enter a string to hash, or EXIT to exit: EXIT
 ronan@ronan-desktop:~/code/md5$
 ```
 
-## Option --crack
+## Option: --crack
 As a talking point for this document, I have also added the ```--crack``` option. When this option is given, the user can enter any MD5 hash, and the program will attempt to reverse it. The time taken to brute-force every permutation of characters for a certain length is shown, to demonstrate that the time taken to crack hashes in this fashion grows exponentially with the size of the input.
 
 ```shell
@@ -209,7 +209,24 @@ Although this attack is simple, the time complexity of it makes it infeasible in
 
 However, in the case of password cracking, permutations bits do not need to be exhausted entirely. This is because only some permutations of bits actually represent a string of charaters. In the case of the cracking utility created for this project, only the letters a-z are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *n* denotes the *size of the alphabet* (in this case, 26 lowercase letters), and *n* donates the *length of the string*. For example, to brute-force strings of length 3 from an alphabet a-z, at worst it would take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can actually be computed quite fast, strings of this length can actually be cracked quite quickly. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this still simplifies down to **O(26<sup>n</sup>)**.
 
-**(do a matplotlib plot showing the increase in time taken to exhaust all permutations of strings of length *n* for *n* of length 0 to 5)**
+A plot can be created, using the timer values shown by the **--crack** option, to show the exponential relationship between the length of a string and the time it takes to exhaust all the permutations for strings of that length, in this case to reverse a hash:
+
+<div align="center"><kbd><img style="border: thin solid black" src="./resources/brute-force-time.png" alt="Plot of time to brute-force" width="300px" align="center"></kbd></div>
+
+As shown, the time taken to brute-force strings of length 5 completely overshadows the time taken to brute-force strings of a smaller length, even if combined. This shows why many websites require passwords to **be at least 8** characters in length: just adding a few extra characters to a smaller password can make it infeasible to crack with this method.
+
+As a further confirmation of the exponential running time of this cracking function, we can we can use log<sub>26</sub> for values on the y-axis:
+
+<div align="center"><kbd><img style="border: thin solid black" src="./resources/log-brute-force-time.png" alt="Plot of logarithmic time to brute-force" width="300px" align="center"></kbd></div>
+
+The approximate straight line indicates that values on the y-axis follow the linear pattern of:
+
+* **log<sub>26</sub>(26<sup>0</sup>) = 0**
+* **log<sub>26</sub>(26<sup>1</sup>) = 1**
+* **log<sub>26</sub>(26<sup>2</sup>) = 2**
+* ...
+
+
 
 That's just one method of reversing a hashed string, though. In the area of password cracking, there are more powerful methods.
 
