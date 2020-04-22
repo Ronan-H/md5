@@ -1,6 +1,6 @@
 # MD5
 
-## Notice about 
+## Notice about the Project's Rescope
 Since the completion of the COVID-19 rescoped version to this project, some content from this README has been changed or moved to [overview.md](overview.md) to reflect the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
 
 ---
@@ -16,6 +16,8 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 ## Files
 **test_input/**: Test input files. Contains 9 different files of different sizes in an attempt to cover as many edge cases as possible.
 
+**resources/**: Resources for use in *overview.md*. This directory can be ignored.
+
 **.gitignore**: Gitignore file, ignoring IDE and compilation files.
 
 **README.md**: This README file.
@@ -29,8 +31,6 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 ## How to Compile and Run
 
 *These installation instructions are for **Linux based** operating systems using the **aptitude** (apt) package manager. Instructions for other platforms may differ. See [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019) for instructions for compiling C programs on a Windows based machine.*
-
-After cloning:
 
 1. Install prerequisites (git and gcc)
 ```shell
@@ -53,19 +53,9 @@ gcc md5.c main.c -o md5 -lm
 ./md5
 ```
 
-5. (Optional) Compile and run can be combined for convenience
-```shell
-gcc md5.c main.c -o md5 -lm && ./md5
-```
-
 ## How it Works
 
-MD5 *(message digest 5)* is a hash function, taking an arbitrary number of bits as input and converting it into 128 bits of output, represented as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords, to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash. These use cases mainly relied on two different properties of MD5:
-
-* Collision resistance: it is computationally infeasible to find two different inputs which produce the same hash
-* Preimage resistance: it is computationally infeasible to find the original message from it's produced hash
-
-MD5 collisions have been found and used as an attack vector, and a theoretical preimage attack has also been found. As such, MD5 is now considered insecure, and the SHA-2 set of cryptographic functions should be used instead.
+MD5 *(message digest 5)* is a hash function, taking an arbitrary number of bits as input and converting it into 128 bits of output, represented as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords, to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash.
 
 ## How I Wrote it
 

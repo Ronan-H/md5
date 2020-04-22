@@ -4,7 +4,45 @@
 Table of contents here
 
 ## Introduction
+## Files
+**test_input/**: Test input files. Contains 9 different files of different sizes in an attempt to cover as many edge cases as possible.
 
+**resources/**: Resources for use in this document. This directory can be ignored.
+
+**.gitignore**: Gitignore file, ignoring IDE and compilation files.
+
+**README.md**: The README file, originally written for the 30% version of this project.
+
+**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32bit *word* values as bits, display blocks, etc.
+
+**main.c**: Program entry point, containing *main()*. Processes command line options, and implements the hashing, cracking, and testing suites. Makes use of *md5.c* for producing hash values.
+
+**md5.h**: Header file containing definitions for both *md5.c* and *main.c*.
+
+## How to Compile and Run
+
+*These installation instructions are for **Linux based** operating systems using the **aptitude** (apt) package manager. Instructions for other platforms may differ. See [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019) for instructions for compiling C programs on a Windows based machine.*
+
+1. Install prerequisites (git and gcc)
+```shell
+sudo apt install git build-essential
+```
+
+2. Clone this repo
+```shell
+git clone https://github.com/Ronan-H/md5.git
+cd md5
+```
+
+3. Compile
+```shell
+gcc md5.c main.c -o md5 -lm
+```
+
+4. Run
+```shell
+./md5 [options, see the help section for details]
+```
 
 ## Command line options
 I have included four different command line options for this project. To see what they are and how to use them, run the program with the ```--help``` option:
@@ -26,8 +64,6 @@ Note: only one of --help, --hash, or --crack will be used, in that order
 
 Exiting...
 ```
-
-
 
 ## Option: --test
 The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
@@ -166,7 +202,7 @@ Here is a breakdown of how I converted a simple array of input bytes into a form
 
 Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimensions array of bytes, where each chunk of 64 bytes can be viewed as an invividual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
 
-### Producing the hash value using MD5
+### Producing the Hash Value using MD5
 1. Generate T[]. *"Let T[i] denote the i-th element of the table, which
    is equal to the integer part of 4294967296 times abs(sin(i)), where i
    is in radians*". Some implementations of MD5 hard code these values, but I prefer to generate them in a loop.
@@ -211,13 +247,13 @@ However, in the case of password cracking, permutations bits do not need to be e
 
 A plot can be created, using the timer values shown by the **--crack** option, to show the exponential relationship between the length of a string and the time it takes to exhaust all the permutations for strings of that length, in this case to reverse a hash:
 
-<div align="center"><kbd><img style="border: thin solid black" src="./resources/brute-force-time.png" alt="Plot of time to brute-force" width="300px" align="center"></kbd></div>
+<div align="center"><kbd><img style="border: thin solid black" src="./resources/brute-force-time.png" alt="Plot of time to brute-force" width="500px" align="center"></kbd></div>
 
 As shown, the time taken to brute-force strings of length 5 completely overshadows the time taken to brute-force strings of a smaller length, even if combined. This shows why many websites require passwords to **be at least 8** characters in length: just adding a few extra characters to a smaller password can make it infeasible to crack with this method.
 
 As a further confirmation of the exponential running time of this cracking function, we can we can use log<sub>26</sub> for values on the y-axis:
 
-<div align="center"><kbd><img style="border: thin solid black" src="./resources/log-brute-force-time.png" alt="Plot of logarithmic time to brute-force" width="300px" align="center"></kbd></div>
+<div align="center"><kbd><img style="border: thin solid black" src="./resources/log-brute-force-time.png" alt="Plot of logarithmic time to brute-force" width="500px" align="center"></kbd></div>
 
 The approximate straight line indicates that values on the y-axis follow the linear pattern of:
 
@@ -234,9 +270,46 @@ That's just one method of reversing a hashed string, though. In the area of pass
 In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing *n* values. However, it can be seem that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
 
 #### Lookup tables
+In many areas of computing, lookup tables can be used to "precompute" the result of a computation, allowing the result to be looked up in a data structure during runtime instead of having to compute the result again. In the area of password cracking, lookup tables can be formed by mapping passwords to their corresponding hash value. This is useful because the time taken to compute the MD5 hash for a given string is much, much slower than simply searching for and grabbing the hash for that password out of a data structure.
+
+**Time and Space Complexity**
+
+The time complexity of a lookup table depends on the data structure used:
+
+* For a simple array of passwords and corresponding hash values in no particular order, every password must be iterated through until the matching password is found. In this case, lookup time is of the order **O(n)**, where *n* is the number of passwords in the table. This is assuming the worst case, where the password wasn't actually in the table at all, so all passwords had to be checked for a match. The space complexity is also clearly **O(n)**, where every extra password and hash pair add a certain amount of memory overhead.
+
+* If the above array is **sorted** by how **common** each password is, on average, passwords can be cracked much quicker. However, the worst case time an space complexity remains the same.
+
+* If the above data structure is **sorted** with passwords in **lexicographical order**, a [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) can be performed to lookup passwords, reducing the time complexity to the order of **O(log n)**. Since the array was just reordered, the space complexity remains the same.
+
+* Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a hugh lookup table could cause collisions, causing the time complexity to approach a worst case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
+
+As shown, it's possible for passwords to be cracked in **O(1)** time, if space is sacrified, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
 
 #### Reverse lookup tables
+Above, we started with a password hash, and search for it in a table mapping hashes to plaintext passwords. Instead, we can start with the hash of a common password, and lookup the **database** of password hashes to ask the question *"I have this hash; who in the database has a password who hashes to this value?*. In this fashion, *many* password hashes can be cracked with a *single* pass through the database. In a large database, a large percentage of user passwords could be cracked by just performing a reverse lookup of the top 10 most commonly used passwords, for example. Another useful property of this idea is that time less time is wasted trying to lookup a user's password who's hash isn't in the table at all.
 
-#### Rainbow tables
+**Space and time complexity**
+
+Using this method, passwords for all users whos corresponding password hash is in the lookup table can be cracked in **O(n)** time, where *n* is the number of users in the database. Notably, comparing every password hash to every user's hash takes **O(nm)** at worst, where *n* is the number of users and *m* is the number of passwords in the database, for lookup tables **and** reverse lookup tables. Space complexity remains the for both as well, having to store the database and lookup table in memory.
+
+### Taking Shortcuts
+The above methods of reversing a hash assumed that MD5 holds the following properties:
+
+* **Collision resistance:** it is computationally infeasible to find two different inputs which produce the same hash
+* **Preimage resistance:** it is computationally infeasible to find the original message from it's produced hash
+
+MD5 collisions have been found and used as an attack vector, and a theoretical preimage attack has also been found. As such, MD5 is now considered insecure, and the SHA-2 set of cryptographic functions should be used instead.
 
 ## References
+[Hashing Algorithms and Security - Computerphile](https://youtu.be/b4b8ktEV4Bg)
+
+* General information about hashing algorithms, including and their uses and potential vulnerabilities, with some focus on MD5 in particular.
+
+[Password Cracking - Computerphile](https://youtu.be/7U-RbOKanYs)
+
+* Great information about what password cracking is and the various methods that can be used, such as brute-forcing through all the permutations of characters, and lookup tables, which I talked about a lot in this document. Also demonstrates how powerful these methods can be when paired with a rediculous server machine with 4x NVIDIA Titan X graphics cards.
+
+[MD5 - Wikipedia](https://en.wikipedia.org/wiki/MD5)
+
+* Detailed information on the MD5 algorithm. This article was particularly useful in helping me write about the vulnerabilities of MD5, for example. I read several other Wikipiedia articles related to hashing too.
