@@ -1,9 +1,27 @@
 # MD5 - Rescoped
 
-## Table of Contents
-Table of contents here
+## Table of contents
+ * [Introduction](#introduction)
+ * [Files](#files)
+ * [How to Compile and Run](#how-to-compile-and-run)
+ * [Command line options](#command-line-options)
+   * [Option: --test](#option:---test)
+   * [Option: --hash](#option:---hash)
+   * [Option: --crack](#option:---crack)
+ * [Algorithms used](#algorithms-used)
+ * [Constructing Blocks, Step by Step](#constructing-blocks-step-by-step)
+ * [Producing the Hash Value using MD5](#producing-the-hash-value-using-md5)
+ * [Complexity of MD5](#complexity-of-md5)
+ * [Complexity of algorithms that can reverse MD5](#complexity-of-algorithms-that-can-reverse-md5)
+ * [Trading space for time](#trading-space-for-time)
+ * [Lookup tables](#lookup-tables)
+ * [Reverse lookup tables](#reverse-lookup-tables)
+ * [Taking Shortcuts](#taking-shortcuts)
+ * [References](#references)
 
 ## Introduction
+In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversing algorithms to show the worst case time and space complexity when different approaches are used.
+
 ## Files
 **test_input/**: Test input files. Contains 9 different files of different sizes in an attempt to cover as many edge cases as possible.
 
@@ -255,7 +273,7 @@ As a further confirmation of the exponential running time of this cracking funct
 
 <div align="center"><kbd><img style="border: thin solid black" src="./resources/log-brute-force-time.png" alt="Plot of logarithmic time to brute-force" width="500px" align="center"></kbd></div>
 
-The approximate straight line indicates that values on the y-axis follow the linear pattern of:
+The approximate straight line indicates that values on the y-axis proportionally follow the pattern of:
 
 * **log<sub>26</sub>(26<sup>0</sup>) = 0**
 * **log<sub>26</sub>(26<sup>1</sup>) = 1**
