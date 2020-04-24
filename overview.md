@@ -58,7 +58,7 @@ gcc md5.c main.c -o md5 -lm
 ## Command Line Options
 I have included four different command line options for this project. To see what they are and how to use them, run the program with the ```--help``` option:
 
-```shell
+```
 ronan@ronan-desktop:~/code/md5$ ./md5 --help
 
 Usage: ./md5 [--test] [--help] [--hash | --crack]
@@ -79,7 +79,7 @@ Exiting...
 ### Option: --test
 The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
 
-```shell
+```
 ronan@ronan-desktop:~/code/md5$ ./md5 --test
 
 ----------------- TEST SUITE ------------------
@@ -138,7 +138,7 @@ As shown, the implementation produces the correct hash for all 9 test files. It 
 
 The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
-```shell
+```
 ronan@ronan-desktop:~/code/md5$ md5sum test_input/*
 d41d8cd98f00b204e9800998ecf8427e  test_input/0_bytes.txt
 aae4424f064da59e945d090f68086e3d  test_input/119_bytes.txt
@@ -154,7 +154,7 @@ a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ### Option: --hash
 If the ```--hash``` option is given, or if no option is given, the user can enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
 
-```shell
+```
 ronan@ronan-desktop:~/code/md5$ ./md5 --hash
 Enter a string to hash, or EXIT to exit: Hello, World!
                          MD5 Hash value: 65a8e27d8879283831b664bd8b7f0ad4
@@ -171,7 +171,7 @@ Exiting...
 ### Option: --crack
 As a talking point for this document, I have also added the ```--crack``` option. When this option is given, the user can enter any MD5 hash, and the program will attempt to reverse it. The time taken to brute-force every permutation of characters for a certain length is shown, to demonstrate that the time taken to crack hashes in this fashion grows exponentially with the size of the input. As shown when the option is used, the crack utility exhausts the permutations of all strings containins lowercase alphabet characters, including the empty string, up to a maximum length of 5 characters. If a match is found, or no match is found after exhausting the entire search space, the program exits.
 
-```shell
+```
 ronan@ronan-desktop:~/code/md5$ ./md5 --crack
 Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592
 Expected plaintext alpahbet: [a-z]*
