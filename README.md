@@ -1,17 +1,20 @@
 # MD5
 
 ## Notice about the Project's Rescope
-Since the completion of the COVID-19 rescoped version to this project, some content from this README has been changed or moved to [overview.md](overview.md) to reflect the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
+Since the completion of the COVID-19 rescoped version to this project, some content from this document has been changed or moved to [overview.md](overview.md) to satisfy the additional requirements and ch[overviewanges made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
 
 ---
 
-## Table of Contents
+## Table of contents:
  * [Files](#files)
  * [How to Compile and Run](#how-to-compile-and-run)
- * [What it Does, and Testing](#what-it-does-and-testing)
  * [How it Works](#how-it-works)
  * [How I Wrote it](#how-i-wrote-it)
- * [Simplification: Using Bytes](#simplification-using-bytes)
+ * [Research](#research)
+ * [Getting Started, and Running into Difficulties](#getting-started-and-running-into-difficulties)
+ * [Making Things Easier](#making-things-easier)
+ * [Fixing Bugs and Finishing Up](#fixing-bugs-and-finishing-up)
+ * [Simplification: Using Bytes](#simplification:-using-bytes)
 
 ## Files
 **test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
@@ -22,7 +25,9 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 
 **README.md**: This README file.
 
-**main.c**: Program entry point, containing *main()*. Runs all test cases from *test_input/*, and then allows the user to enter any string they like to see it's corresponding hash value, in a loop.
+**overview.md**: Documentation added for the completion of the 70% rescoped portion of the project.
+
+**main.c**: Program entry point, containing *main()*. Processes command line options, and implements the hashing, cracking, and testing suites. Makes use of *md5.c* for producing hash values.
 
 **md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32-bit *word* values as bits, display blocks, etc.
 
@@ -57,10 +62,12 @@ gcc md5.c main.c -o md5 -lm
 
 MD5 *(message digest 5)* is a hash function, taking an arbitrary number of bits as input and converting it into 128 bits of output, represented as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords, to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash.
 
+Additional information about how MD5 works, and about the suite of tests I created to help me develop my implementation, can be found in [overview.md](overview.md).
+
 ## How I Wrote it
 
 ### Research
-I was mostly able to just follow the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) to complete the assignment, which fully specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to make it easier for me to follow along. I found I didn't really need to do too much research to complete the assignment, as the C concepts I used were taught to us across two modules (Procedural Programming and Advanced Procedural Programming) in second year. There were a few things I didn't know how to do in C, or had forgotten how to do, such as allocating memory with *malloc*, and using ```sprintf()``` to store a formatted string in a *char* array. Any time I needed help like this, I included a comment in my code to the web page I used to help me along (usually a Stack Overflow answer). I am also already used to working with bytes and using bitwise operations, such as in [this](https://github.com/Ronan-H/four-square-cipher/blob/master/src/ie/gmit/sw/Cipher.java) assignment I did, so there wasn't anything I needed to research there. This was the first time I had to consider *endianness* in a project though, which I found very confusing, but again I was able to just read the RFC to make sure that the bits/bytes were being ordered correctly.
+I was mostly able to just follow the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) to complete the assignment, which fully specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to make it easier for me to follow along. I found I didn't really need to do too much research to complete the assignment, as the C concepts I used were taught to us across two modules (Procedural Programming and Advanced Procedural Programming) in second year. There were a few things I didn't know how to do in C, or had forgotten how to do, such as allocating memory with ```malloc()```, and using ```sprintf()``` to store a formatted string in a *char* array. Any time I needed help like this, I included a comment in my code to the web page I used to help me along (usually a Stack Overflow answer). This was the first time I had to consider *endianness* in a project, which I found very confusing, but again I was able to just read the RFC to make sure that the bits/bytes were being ordered correctly.
 
 ### Getting Started, and Running into Difficulties
 I began by defining some easy *function-like* macros, such as F(), G(), H() and I(). These were pretty easy to implement, as it was just a matter of translating the mathematical functions given in the RFC into C code.
@@ -71,8 +78,6 @@ After that, though, it got a lot more difficult. I decided I would use a file as
 Eventually, I decided that a 2 dimensional array of *word*s would be the best way of representing a series of blocks. This makes it easier to iterate over the values in each block. Also, I decided that the padding bits should be added to the input message *before* converting the input into blocks, not after.
 
 Using these ideas makes the file reading, padding, and block building steps fairly straight forward.
-
-
 
 From there, the blocks are fed straight into the MD5 algorithm. There's not really much to say about this, it's pretty much exactly what the RFC says to do in pseudocode, I just had to translate it into C code.
 

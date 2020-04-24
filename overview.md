@@ -1,6 +1,6 @@
 # MD5 - Rescoped
 
-## Table of contents:
+## Table of Contents:
  * [Introduction](#introduction)
  * [Files](#files)
  * [How to Compile and Run](#how-to-compile-and-run)
@@ -51,7 +51,7 @@ gcc md5.c main.c -o md5 -lm
 ```
 
 4. Run
-```shell
+```
 ./md5 [options, see the help section for details]
 ```
 
