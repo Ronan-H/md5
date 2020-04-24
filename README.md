@@ -5,15 +5,11 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 
 ---
 
-## Table of contents:
+## Table of Contents:
  * [Repo Contents](#repo-contents)
  * [How to Compile and Run](#how-to-compile-and-run)
  * [How it Works](#how-it-works)
  * [How I Wrote it](#how-i-wrote-it)
- * [Research](#research)
- * [Getting Started, and Running into Difficulties](#getting-started-and-running-into-difficulties)
- * [Making Things Easier](#making-things-easier)
- * [Fixing Bugs and Finishing Up](#fixing-bugs-and-finishing-up)
  * [Simplification: Using Bytes](#simplification-using-bytes)
 
 ## Repo Contents
