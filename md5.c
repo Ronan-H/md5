@@ -170,7 +170,7 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
     // leaving some extra space for any amount of padding needed at the end
     
     // TODO figure out he max possible number of padding bytes instead of adding
-    // and arbitrary number here
+    // an arbitrary number here
     ubyte buffer[length + 100];
     for (int i = 0; i < length; i++) {
         buffer[i] = bytes[i];

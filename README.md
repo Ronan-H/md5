@@ -14,7 +14,7 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
  * [Simplification: Using Bytes](#simplification-using-bytes)
 
 ## Files
-**test_input/**: Test input files. Contains 9 different files of different sizes in an attempt to cover as many edge cases as possible.
+**test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
 **resources/**: Resources for use in *overview.md*. This directory can be ignored.
 
@@ -24,7 +24,7 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 
 **main.c**: Program entry point, containing *main()*. Runs all test cases from *test_input/*, and then allows the user to enter any string they like to see it's corresponding hash value, in a loop.
 
-**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32bit *word* values as bits, display blocks, etc.
+**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32-bit *word* values as bits, display blocks, etc.
 
 **md5.h**: Header file containing definitions for both *md5.c* and *main.c*.
 
