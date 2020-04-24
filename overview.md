@@ -2,7 +2,7 @@
 
 ## Table of Contents:
  * [Introduction](#introduction)
- * [Files](#files)
+ * [Repo Contents](#repo-contents)
  * [How to Compile and Run](#how-to-compile-and-run)
  * [Command Line Options](#command-line-options)
  * [Algorithms Used](#algorithms-used)
@@ -15,7 +15,7 @@
 ## Introduction
 In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversing algorithms to show the worst case time and space complexity when different approaches are used.
 
-## Files
+## Repo Contents
 **test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
 **resources/**: Resources for use in this document. This directory can be ignored.

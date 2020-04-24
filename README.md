@@ -6,7 +6,7 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
 ---
 
 ## Table of contents:
- * [Files](#files)
+ * [Repo Contents](#repo-contents)
  * [How to Compile and Run](#how-to-compile-and-run)
  * [How it Works](#how-it-works)
  * [How I Wrote it](#how-i-wrote-it)
@@ -14,9 +14,9 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
  * [Getting Started, and Running into Difficulties](#getting-started-and-running-into-difficulties)
  * [Making Things Easier](#making-things-easier)
  * [Fixing Bugs and Finishing Up](#fixing-bugs-and-finishing-up)
- * [Simplification: Using Bytes](#simplification:-using-bytes)
+ * [Simplification: Using Bytes](#simplification-using-bytes)
 
-## Files
+## Repo Contents
 **test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
 **resources/**: Resources for use in *overview.md*. This directory can be ignored.
