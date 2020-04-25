@@ -221,6 +221,8 @@ Here is a breakdown of how I converted a simple array of input bytes into a form
 6. Use bitwise operations to represent the input length in the last 8 bytes.
 7. Create a 2D *word* array, and read each group of 4 bytes from the ```buffer``` array into each *word* value. Again, this is pretty straight forward, because we have already guaranteed that the array can be divided into blocks evenly. It's important to remember here that **bits** are grouped in **high-order**, and bytes are grouped in **low-order**, as the RFC specifies. For me, this was one of the most confusing aspects of the assignment to get right.
 
+<div align="center"><kbd><img style="border: thin solid black" src="./resources/block-building-diagram.jpeg" alt="Plot of logarithmic time to brute-force" width="500px" align="center"></kbd></div>
+
 Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimension array of bytes, where each chunk of 64 bytes can be viewed as an invividual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
 
 ### Producing the MD5 Hash Value
