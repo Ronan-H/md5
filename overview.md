@@ -236,7 +236,7 @@ Once the input has been processed into blocks, or at least into a format that ca
 
 ## Complexity of MD5
 
-### Precursor: What Order of Complexity Should We Expect?
+### What Order of Complexity Should We Expect?
 
 Hashing algorithms are useful in a variety of ways, including password hashing, which will be a focus in this document, and hashing files to verify that they have remained unchanged. In the latter use case mentioned, input to the MD5 algorithm could potentially be *very large*. For example, consider somebody downloading a copy of Linux Mint. The ISO file they download would be about 2 gigabytes in size. In the case of downloading operating systems, it is strongly advised to verify the integrity of the ISO file before installing, as installing a compromised OS would be catastrophic.
 
