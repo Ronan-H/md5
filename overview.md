@@ -7,13 +7,13 @@
  * [Command Line Options](#command-line-options)
  * [Algorithms Used](#algorithms-used)
  * [Complexity of MD5](#complexity-of-md5)
- * [Complexity of Algorithms that can Reverse MD5](#complexity-of-algorithms-that-can-reverse-md5)
+ * [Complexity of Algorithms that can Reverse MD5](#complexity-of-algorithms-that-can-reveryse-md5)
  * [Trading Space for Time](#trading-space-for-time)
  * [Taking Shortcuts](#taking-shortcuts)
  * [References](#references)
 
 ## Introduction
-In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversing algorithms to show the worst case time and space complexity when different approaches are used.
+In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialing all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst case time and space complexity when different approaches are used.
 
 ## Repo Contents
 **test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
@@ -77,7 +77,7 @@ Exiting...
 ```
 
 ### Option: --test
-The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
+The testing of software is an important part of evaluation, and can also be use to drive the development of the project if the tests are written **before the code** (test-driven development). The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
 
 ```
 ronan@ronan-desktop:~/code/md5$ ./md5 --test
@@ -134,7 +134,7 @@ MATCHES? -- YES --
 Exiting...
 ```
 
-As shown, the implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths.
+As shown, the implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths. Notice that I included different file formats for some of the tests as well, including *WAV*, an audio format, and *PNG*, an image format. It is important to test your code against as wide a range of inputs as possible, without making any asssumptions about inputs that "should work". Remember, purposely writing tests that you know will pass **are of no use**. Failing tests highlight flaws in your code, which you can fix.
 
 The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
@@ -152,7 +152,7 @@ a36764134107d0fe6c80bc7fa696fb16  test_input/smb_coin.wav
 ```
 
 ### Option: --hash
-If the ```--hash``` option is given, or if no option is given, the user can enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application.
+If the ```--hash``` option is given, or if no option is given, the user can enter any string they want into the console (arbitrarily limited to 1000 characters) to produce the MD5 hash of that string. Entering *EXIT* exits the application. I decided to also print the hash value of "EXIT" before exiting, otherwise it would be impossible for the user to get the hash of that particular string.
 
 ```
 ronan@ronan-desktop:~/code/md5$ ./md5 --hash
@@ -203,6 +203,15 @@ Match found!
 
 Exiting...
 ```
+
+To generate all the permutations for a string of a given length, I made use of recursion. As an exercise for the reader, why did I use recursion, and what's the issue with using nested loops?
+
+<details>
+  <summary>Answer</summary>
+  
+  To generate all of the permutations for a string of length *n*, *n* nested loops are needed. Having 5 nested loops would be outrageous. Also, what if you decided that you don't want the program to exit until it finds the matching hash, making *n* a variable length? In that case, nested loops cannot used, since you can't have an arbitrary number of them. This is where a recursive solution comes in handy: it's short, tidy, and flexible.
+  
+</details>
 
 ## Algorithms Used
 The process of producing an MD5 hash can be broken down into two separate algorithms: one to manipulate the input to be of the format that the hashing algorithm expects, and the MD5 hashing algorithm itself. MD5 expects the input to be in the form of fixed length **blocks**, where each block is exactly 512 bits long. To fill up any extra space, and to ensure that doing so does not compromise the security of the hash, a padding scheme is used to fill up the rest of the space in the blocks (I.e., appending bits set to 0 for the remainder of the output is **not good enough**).
