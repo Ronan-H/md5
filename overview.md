@@ -15,6 +15,8 @@
 ## Introduction
 In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialing all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst case time and space complexity when different approaches are used.
 
+As part of this document being *"pitched at students  in  the  year  below"*, I have included some question and answer blocks. The question should be thought about before opening the answer and reading on.
+
 ## Repo Contents
 **test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
@@ -204,10 +206,12 @@ Match found!
 Exiting...
 ```
 
-To generate all the permutations for a string of a given length, I made use of recursion. As an exercise for the reader, why did I use recursion, and what's the issue with using nested loops?
+To generate all the permutations for a string of a given length, I made use of recursion.
+
+Why did I choose to use recursion, and what's the issue with using nested loops?
 
 <details>
-  <summary>Answer</summary>
+  <summary>My Answer</summary>
   
   To generate all of the permutations for a string of length *n*, *n* nested loops are needed. Having 5 nested loops would be outrageous. Also, what if you decided that you don't want the program to exit until it finds the matching hash, making *n* a variable length? In that case, nested loops cannot used, since you can't have an arbitrary number of them. This is where a recursive solution comes in handy: it's short, tidy, and flexible.
   
@@ -248,14 +252,18 @@ Here are the steps involved in generating an MD5 hash value, based on the input 
 4. Print ABCD in low-byte order, expressed as 32 lowercase hexadecimal characters, where each series of 8 characters represents A, B, C, and D. In my implementation, this string is actually returned from the function instead of being printed, so that the hash can be used in other ways. This string of characters is the final MD5 hash value.
 
 ## Complexity of MD5
+What order of space and time complexity should be expceted for any hashing algorithm?
 
-### What Order of Complexity Should We Expect?
-
+<details>
+<summary>My Answer</summary>
+  
 Hashing algorithms are useful in a variety of ways, including password hashing, which will be a focus in this document, and hashing files to verify that they have remained unchanged. In the latter use case mentioned, input to the MD5 algorithm could potentially be *very large*. For example, consider somebody downloading a copy of Linux Mint. The ISO file they download would be about 2 gigabytes in size. In the case of downloading operating systems, it is strongly advised to verify the integrity of the ISO file before installing, as installing a compromised OS would be catastrophic.
 
 We will call the number of bytes which the MD5 algorithm has to process *n*. So, in this case, the input is 31,250,000 bytes long, so *n* is 31,250,000. As we can see, this an enormous number, so for MD5 to be useful as a hashing algorithm, we would want it to run with a time and space complexity of **O(n) time or better**. Any complexity worse than this would surely be too slow, or take up too much memory for larger inputs.
 
 With that in mind, let's take a look at the time and space complexities for my implementation of MD5.
+
+</details>
 
 ### Building Blocks
 1. Copying the input array, leaving some extra space for padding: every extra byte needed to be copied takes some fixed amount of time to copy, and one extra byte of space. As such, the time and space complexities for this operation must be **O(n)**. The extra space allocated is constant for all sizes of inputs, and therefore is not relevant to the time and space complexities.
@@ -297,10 +305,10 @@ The approximate straight line confirms the exponential nature of the function.
 
 It is important to note that the irregularities in the timer values, especially for shorter string lengths, are because **timing code execution speed is not reliable**.
 
-Do you know some of the reasons why this may be?
+Do you know some of the reasons why this might be?
 
 <details>
-  <summary>Answer</summary>
+  <summary>My Answer</summary>
 
   * You don't know the optimizations that the compiler, or runtime environment in the case of languages like Java, might be making.
   * You don't know what other operations your CPU might be performing at the same time that your code is running, E.g. the operations of other programs, or the OS itself.
@@ -323,7 +331,7 @@ In many areas of computing, lookup tables can be used to "precompute" the result
 Why is this useful?
 
 <details>
-  <summary>Answer</summary>
+  <summary>My Answer</summary>
 
   Because the time needed to retrieve an MD5 hash value for a certain input from a data structure is much, much less than the time it would take to generate the hash for that value. In general, this is the reason that caching is useful, too.
 
