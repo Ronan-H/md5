@@ -7,7 +7,7 @@
  * [Command Line Options](#command-line-options)
  * [Algorithms Used](#algorithms-used)
  * [Complexity of MD5](#complexity-of-md5)
- * [Complexity of Algorithms that can Reverse MD5](#complexity-of-algorithms-that-can-reveryse-md5)
+ * [Complexity of Algorithms that can Reverse MD5](#complexity-of-algorithms-that-can-reverse-md5)
  * [Trading Space for Time](#trading-space-for-time)
  * [Taking Shortcuts](#taking-shortcuts)
  * [References](#references)
