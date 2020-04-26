@@ -235,6 +235,8 @@ Here is a breakdown of how I converted a simple array of input bytes into a form
 Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimension array of bytes, where each chunk of 64 bytes can be viewed as an invividual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
 
 ### Producing the MD5 Hash Value
+Here are the steps involved in generating an MD5 hash value, based on the input format created above:
+
 1. Generate T[]. *"Let T[i] denote the i-th element of the table, which
    is equal to the integer part of 4294967296 times abs(sin(i)), where i
    is in radians*". Some implementations of MD5 hard code these values, but I prefer to generate them in a loop, storing them in an array for use in the following steps.
@@ -253,7 +255,7 @@ Hashing algorithms are useful in a variety of ways, including password hashing, 
 
 We will call the number of bytes which the MD5 algorithm has to process *n*. So, in this case, the input is 31,250,000 bytes long, so *n* is 31,250,000. As we can see, this an enormous number, so for MD5 to be useful as a hashing algorithm, we would want it to run with a time and space complexity of **O(n) time or better**. Any complexity worse than this would surely be too slow, or take up too much memory for larger inputs.
 
-With that in mind, let's take a look at the time and space complexities of MD5.
+With that in mind, let's take a look at the time and space complexities for my implementation of MD5.
 
 ### Building Blocks
 1. Copying the input array, leaving some extra space for padding: every extra byte needed to be copied takes some fixed amount of time to copy, and one extra byte of space. As such, the time and space complexities for this operation must be **O(n)**. The extra space allocated is constant for all sizes of inputs, and therefore is not relevant to the time and space complexities.
@@ -270,32 +272,47 @@ The overall runtime of building blocks is the **worst** space and time complexit
 
 The overall running time of the hashing algorithm is then the worst complexity of those steps, so it runs in **O(n)** time, but uses **O(1)** extra space, since the blocks are already supplied from the previous step
 
-As predicted above, the algorithm as a whole runs in **O(n)** time, and **O(n)** space.  To me, it also seems that **a secure hashing algorithm can not run better than *O(n)* time**, since every byte has to be used in some operation. If any input byte was ignored, a change to those bytes would **not change the output of the algorithm**, producing a **collision**, making the hash insecure and effectively unusable. Surely, **a hashing algorithm can not run better than *O(n)* space** either, since the entire input has to be held in memory. In that sense, the time and space complexities of MD5 are exactly what they should be.
+As predicted above, the algorithm as a whole runs in **O(n)** time, and **O(n)** space. It also seems to me that **a secure hashing algorithm can not run better than *O(n)* time**, since every byte has to be used in some operation. If any input byte was ignored, a change to those bytes would **not change the output of the algorithm**, producing a **collision**, making the hash insecure and effectively unusable. Surely, **a hashing algorithm can not run better than *O(n)* space** either, since the entire input has to be held in memory. Based on that, I would guess that the time and space complexities of my implementation of MD5 cannot be improved upon. That does not mean that it can't be optimized, though. For example, hard coding the values of T[] instead of generating the array each time the hash function is run, and representing blocks as a 2D array instead of a 1D array, would probably improve the efficiency of the algorithm. In these cases, I chose **readability** and **maintainability** over **optimization/efficiency**. This trade-off is important to recognise as a software developer, and care should be taken when deciding which side should be sacrificed.
 
 ## Complexity of Algorithms that can Reverse MD5
-One of the main features of hashing algorithms is that they are *one-way*: for some value *x*, computing *f(x)* is "easy", I.e. it can be done in a feasible amount of time. However, given a value *f(x)*, reversing the function to compute *x* is impossible. This can be seen because the hash *f(x)* is of fixed length, and the input can be *any length*, so some *x* values must map to the same value *f(x)*. As such, how can you directly reverse *f(x)* if there are multiple values of *x* which hash to that same *f(x)*?
+One of the main features of hashing algorithms is that they are *one-way*: for some value *x*, computing *f(x)* is "easy", I.e. it can be done in a feasible amount of time. However, given a value *f(x)*, directly reversing the function to compute *x* is impossible. This can be seen because the hash *f(x)* is of fixed length, and the input can be *any length*, so some *x* values must map to the same value *f(x)*. As such, how can you directly reverse *f(x)* if there are multiple values of *x* which hash to that same *f(x)*?
 
-Although directly reversing a hash function is impossible, you can still repeatedly hash different inputs until you found a hash that matches the one you're trying to reverse. If a match is found, the input you hashed is likely to be the same as the reference hash's input, since there are a huge number of possible hash values (2<sup>128</sup>: all permutations of bits for MD5's 128-bit output, assuming all hashes are a possible result). This method of reversal is known as a *brute-force* attack, and is the simplest form of attack, akin to trying all the combinations on someone's luggage lock (000, 001, 002, ... 999).
+Although directly reversing a hash function is impossible, you can still repeatedly hash different inputs until you find a hash that matches the one that you're trying to reverse. If a match is found, the input you hashed is likely to be the same as the reference hash's input, since there are a huge number of possible hash values (2<sup>128</sup>: all permutations of bits for MD5's 128-bit output, assuming all hashes are a possible result). This method of reversal is known as a *brute-force* attack, and is the simplest form of attack, akin to trying all the combinations of someone's luggage lock (000, 001, 002, ... 999).
 
-Although this attack is simple, the time complexity of it makes it infeasible in a lot of situations. Every extra bit which you are brute-forcing through *doubles* the number of hashes needed to exhaust all the permutations. This implies a time complexity in the order of **O(2<sup>n</sup>)**. This is one of the **worst** time complexities you can have. Just to brute-force input to the MD5 algorithm that produces a single block (512 bits), at worst you would have to generate and compare 2<sup>512</sup> hash values, which is a massive number and completely infeasible.
+Although this attack is simple, the time complexity of it makes it infeasible in a lot of situations. Every extra bit which you are brute-forcing through *doubles* the number of hashes needed to exhaust all of the permutations. This implies a time complexity in the order of **O(2<sup>n</sup>)**. This is one of the **worst** time complexities you can have. Just to brute-force input to the MD5 algorithm that produces a single block (512 bits), at worst you would have to generate and compare 2<sup>512</sup> hash values, which is a massive number and completely infeasible.
 
-However, in the case of **password cracking**, permutation bits do not need to be exhausted entirely. This is because only some permutations of bits actually represent a string of charaters. In the case of the cracking utility created for this project, only the lowercase letters *a to z* are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *26* is the size of the alphabet being used, and *n* is the *length of the string*. For example, to brute-force through all strings of length 5 from an alphabet a-z, at worst it could take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can be computed quite fast, strings of this length can actually be cracked quite quickly. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this would still be represented as having a time complexity of  **O(26<sup>n</sup>)**.
+However, in the area of **password cracking**, bit permutations do not need to be exhausted completely. This is because only some permutations of bits actually represent a string of charaters. In the case of the simple cracking utility that I created for this project, only the lowercase letters *a to z* are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *26* is the size of the alphabet being used, and *n* is the *length of the string, in characters*. For example, to brute-force through all the strings of length 5 from an alphabet a-z, at worst it could take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can be computed quite quickly, strings of this length can actually be cracked in a short amount of time. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this would still be represented as having a worst-case time complexity of **O(26<sup>n</sup>)**.
 
 A plot can be created, using the timer values shown by the **--crack** option, to show the exponential relationship between the length of a string and the time it takes to exhaust all the permutations for strings of that length, in this case to reverse a hash:
 
 <div align="center"><kbd><img style="border: thin solid black" src="./resources/brute-force-time.png" alt="Plot of time to brute-force" width="500px" align="center"></kbd></div>
 
-As shown, the time taken to brute-force strings of length 5 completely overshadows the time taken to brute-force strings of a smaller length, even if combined. This shows why many websites require passwords to **be at least 8** characters in length: just adding a few extra characters to a smaller password can make it infeasible to crack with this method.
+As shown, the time taken to brute-force through all strings of length 5 completely overshadows the time taken to brute-force strings of a smaller length, even if combined. This shows why many websites require passwords to **be at least 8** characters in length: just adding a few extra characters to a smaller password can make it infeasible to crack with this method.
 
 As a further confirmation of the exponential running time of this cracking function, we can we can use log<sub>26</sub> for values on the y-axis:
 
 <div align="center"><kbd><img style="border: thin solid black" src="./resources/log-brute-force-time.png" alt="Plot of logarithmic time to brute-force" width="500px" align="center"></kbd></div>
 
-The approximate straight line confirms the logarithmic nature of the function.
+The approximate straight line confirms the exponential nature of the function.
 
-It is important to note that the irregularities in the timer values are because **timing code execution speed is not reliable**, especially for shorter string lengths in this case, which are brute-forced extremely quickly. 
+It is important to note that the irregularities in the timer values, especially for shorter string lengths, are because **timing code execution speed is not reliable**.
 
-That's just one method of reversing a hashed string, though. In the area of password cracking, there are more powerful methods.
+Do you know some of the reasons why this may be?
+
+<details>
+  <summary>Answer</summary>
+
+  * You don't know the optimizations that the compiler, or runtime environment in the case of languages like Java, might be making.
+  * You don't know what other operations your CPU might be performing at the same time that your code is running, E.g. the operations of other programs, or the OS itself.
+  * You might not realise that you are timing more or less operations than you actually intend to, E.g. initialisation code.
+  * In the case of timing the same code on multiple different systems, any differences in hardware, operating system, or configuration etc. can cause wild differences in timer values.
+  * And more, similar reasons...
+
+  As such, code execution times should be taken with a pinch of salt. Big O notation should be used instead, which provides a method of measauring code performance that is unaffected by all of the issues mentioned above. For the purposes of this document, though, I think the plots offer a great visualisation of this algorithms performance over varying values of *n*.
+
+</details>
+
+That's just one method of reversing a hashed string, though. Specific to the area of password cracking, there are more powerful methods.
 
 ### Trading Space for Time
 In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing *n* values. However, it can be seen that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
