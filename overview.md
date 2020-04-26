@@ -315,10 +315,19 @@ Do you know some of the reasons why this may be?
 That's just one method of reversing a hashed string, though. Specific to the area of password cracking, there are more powerful methods.
 
 ### Trading Space for Time
-In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing *n* values. However, it can be seen that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
+In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing values of *n*. However, it can be seen that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
 
 #### Simple Lookup Tables
-In many areas of computing, lookup tables can be used to "precompute" the result of a computation, allowing the result to be looked up in a data structure during runtime instead of having to compute the result again. In the area of password cracking, lookup tables can be formed by mapping passwords to their corresponding hash value. This is useful because the time taken to compute the MD5 hash for a given string is much, much slower than simply searching for and grabbing the hash for that password out of a data structure.
+In many areas of computing, lookup tables can be used to "precompute" the result of a computation, allowing the result to be looked up in a data structure during runtime instead of having to compute the result again. One example of this is caching, which is prevalant in the areas of DNS lookups and web page requests, to name a few. In the area of password cracking, lookup tables can be formed by mapping passwords to their corresponding hash value.
+
+Why is this useful?
+
+<details>
+  <summary>Answer</summary>
+
+  Because the time needed to retrieve an MD5 hash value for a certain input from a data structure is much, much less than the time it would take to generate the hash for that value. In general, this is the reason that caching is useful, too.
+
+</details>
 
 **Time and Space Complexity**
 
@@ -330,12 +339,12 @@ The time complexity of retrieving elements from a lookup table depends on the da
 
 * If the above data structure is **sorted** with passwords in **lexicographical order**, a [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) can be performed to lookup passwords, reducing the time complexity to the order of **O(log n)** in the worst case. Since the array was just reordered, the space complexity remains the same.
 
-* Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a hugh lookup table could cause collisions, causing the time complexity to approach a worst case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
+* Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a huge lookup table could cause collisions, causing the time complexity to approach a worst case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
 
-As shown, it's possible for passwords to be cracked in **O(1)** time, if space is sacrified, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
+As shown, it is possible for passwords to be cracked in **O(1)** time, if space is sacrified, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
 
 #### Reverse Lookup Tables
-Above, we started with a password hash, and search for it in a table mapping hashes to plaintext passwords. Instead, we can start with the hash of a common password, and lookup the **database** of password hashes to ask the question *"I have this hash; who in the database has a password who hashes to this value?*. In this fashion, *many* password hashes can be cracked with a *single* pass through the database. In a large database, a large percentage of user passwords could be cracked by just performing a reverse lookup of the top 10 most commonly used passwords, for example. Another useful property of this idea is that less time is wasted trying to lookup a user's password who's hash isn't in the table at all.
+Above, we started with a password hash, and searched for it in a table mapping hashes to plaintext passwords. Instead, we can start with the hash of a common password, and lookup the **database** of password hashes to ask the question *"I have this hash; who in the database has a password who hashes to this value?*. In this fashion, *many* password hashes can be cracked with a *single* pass through the database. In a large database, a large percentage of user passwords could be cracked by just performing a reverse lookup of the top 10 most commonly used passwords, for example. Another useful property of this idea is that less time is wasted trying to lookup a user's password who's hash isn't in the table at all.
 
 **Time and Space Complexity**
 
