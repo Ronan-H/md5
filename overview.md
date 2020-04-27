@@ -72,7 +72,7 @@ Options:
   --hash:  hashes user input in a loop (DEFAULT OPTION)
   --crack: runs the MD5 cracking utility
 
-Note: only one of --help, --hash, or --crack will be used, in that order
+Note: only one of --hash or --crack will be used if both are specified, in that order
       (--test and --help can be used alongside any other option, or on their own)
 
 Exiting...

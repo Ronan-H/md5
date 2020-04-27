@@ -22,7 +22,7 @@ typedef unsigned char ubyte;
 // single padding bit
 #define FIRST_PADDING_BYTE 128;
 
-// function-like macros
+// "function-like" macros
 #define MIN(a, b) (a < b ? a : b)
 
 // auxiliary functions
@@ -41,7 +41,7 @@ typedef unsigned char ubyte;
 #define R3_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + H(b, c, d) + xk + ti), s))
 #define R4_OP(a, b, c, d, xk, s, ti) a = (b + ROTL((a + I(b, c, d) + xk + ti), s))
 
-// structs
+// MD5 Blocks struct, containing a 2D "word" array and the number of blocks stored
 typedef struct Blocks {
     word **words;
     int numBlocks;

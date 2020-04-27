@@ -6,8 +6,6 @@ char * md5(Blocks *blocks) {
     int numBlocks = blocks->numBlocks;
     word **M = blocks->words;
 
-    //printBlocks(blocks);
-
     // initialise MD buffer
     // (low-byte order)
     word A = 0x67452301;
@@ -109,6 +107,7 @@ char * md5(Blocks *blocks) {
         R4_OP(C, D, A, B, X[2], 15, T[63]);
         R4_OP(B, C, D, A, X[9], 21, T[64]);
 
+        // add AA, BB, CC, and DD to MD buffer
         A += AA;
         B += BB;
         C += CC;
@@ -168,10 +167,7 @@ struct Blocks * makeBlocks(ubyte *bytes, int length) {
 
     // copy input bytes to leave input array unchanged,
     // leaving some extra space for any amount of padding needed at the end
-    
-    // TODO figure out he max possible number of padding bytes instead of adding
-    // an arbitrary number here
-    ubyte buffer[length + 100];
+    ubyte buffer[length + 72];
     for (int i = 0; i < length; i++) {
         buffer[i] = bytes[i];
     }
@@ -250,8 +246,7 @@ struct Blocks * readFileAsBlocks(char *filePath) {
     rewind(filePtr);
 
     // read the entire file into a byte buffer
-    // (leave enough space for the maximum possible padding length + input length bytes)
-    ubyte *buffer = (ubyte *)malloc((fileLength + 72) * sizeof(ubyte));
+    ubyte *buffer = (ubyte *)malloc(fileLength* sizeof(ubyte));
     fread(buffer, fileLength, 1, filePtr);
 
     // convert byte array to blocks
