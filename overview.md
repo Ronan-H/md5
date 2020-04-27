@@ -13,7 +13,7 @@
  * [References](#references)
 
 ## Introduction
-In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialing all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst case time and space complexity when different approaches are used.
+In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialing all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst-case time and space complexity when different approaches are used.
 
 As part of this document being *"pitched at students  in  the  year  below"*, I have included some question and answer blocks. The question should be thought about before opening the answer and reading on.
 
@@ -56,7 +56,7 @@ gcc md5.c main.c -o md5 -lm
 
 4. Run
 ```
-./md5 [options, see the help section for details]
+./md5 [options, read the next section for details]
 ```
 
 ## Command Line Options
@@ -81,7 +81,7 @@ Exiting...
 ```
 
 ### Option: --test
-The testing of software is an important part of evaluation, and can also be use to drive the development of the project if the tests are written **before the code** (test-driven development). The purpose of this option is to demonstrate that the program can produce the correct MD5 hash of any input. As such, running the program with this argument supplied will run the MD5 algorithm against all 9 test files in *test_input/*:
+The testing of software is an important part of evaluation, and can also be used to drive the development of a project if the tests are written **before the code** (test-driven development). Running the program with the ```--test``` option will run the MD5 algorithm against all nine of the test files in *test_input/*:
 
 ```
 ronan@ronan-desktop:~/code/md5$ ./md5 --test
@@ -210,12 +210,12 @@ Exiting...
 
 To generate all the permutations for a string of a given length, I made use of recursion.
 
-Why did I choose to use recursion, and what's the issue with using nested loops?
+Why did I choose to use recursion instead of using nested loops, and what are the issues with using nested loops?
 
 <details>
   <summary>My Answer</summary>
   
-  To generate all of the permutations for a string of length *n*, *n* nested loops are needed. Having 5 nested loops would be outrageous. Also, what if you decided that you don't want the program to exit until it finds the matching hash, making *n* a variable length? In that case, nested loops cannot used, since you can't have an arbitrary number of them. This is where a recursive solution comes in handy: it's short, tidy, and flexible.
+  To generate all of the permutations for a string of length *n*, *n* nested loops are needed. Having 5 nested loops would be outrageous, and that's a pretty small string. Also, what if you decided that you don't want the program to exit until it finds the matching hash, or you wanted to let the user specify the max size of *n*, making *n* a variable length? In those cases, nested loops cannot used, since you can't have an arbitrary number of them. This is where a recursive solution comes in handy: it's short, tidy, and flexible.
   
 </details>
 
@@ -254,7 +254,7 @@ Here are the steps involved in generating an MD5 hash value, based on the input 
 4. Print ABCD in low-byte order, expressed as 32 lowercase hexadecimal characters, where each series of 8 characters represents A, B, C, and D. In my implementation, this string is actually returned from the function instead of being printed, so that the hash can be used in other ways. This string of characters is the final MD5 hash value.
 
 ## Complexity of MD5
-What order of space and time complexity should be expceted for any hashing algorithm?
+What order of time and space complexity should be expceted for any hashing algorithm?
 
 <details>
 <summary>My Answer</summary>
@@ -269,15 +269,15 @@ With that in mind, let's take a look at the time and space complexities for my i
 
 ### Building Blocks
 1. Copying the input array, leaving some extra space for padding: every extra byte needed to be copied takes some fixed amount of time to copy, and one extra byte of space. As such, the time and space complexities for this operation must be **O(n)**. The extra space allocated is constant for all sizes of inputs, and therefore is not relevant to the time and space complexities.
-2. Computing the number of padding bytes needed, appending the first bit of padding, etc...: this is a **constant time** operation, running in **O(1)** space and time. In other words, no mater what the input is, these operations take the same amount of time, and the same amount of space.
-3. Appending the padding bits: this is difficult to classify, since the number of padding bits needed **changes depending on *n***, and is not proportional to the size of the input. However, since there is a small, fixed upper bound on the number of padding bits which are needed with varying lengths of input, I would say this step  could be approximated as **O(1)** space and time.
+2. Computing the number of padding bytes needed, appending the first bit of padding, etc...: this is a **constant time** operation, running in **O(1)** time and space. In other words, no mater what the input is, these operations take the same amount of time, and the same amount of space.
+3. Appending the padding bits: this is difficult to classify, since the number of padding bits needed **changes depending on *n***, and is not proportional to the size of the input. However, since there is a small, fixed upper bound on the number of padding bits which are needed with varying lengths of input, I would say this step  could be approximated as **O(1)** time and space.
 4. Copying the input array into a series of *word* blocks: every byte of input must be individually copied to a block, and doing so uses array accesses and bitwise operations which run in constant time, so the overall time taken for this operation is **O(n)**. In a similar way, one byte of extra space is needed for every byte of input, so this also uses **O(n)** space.
 
-The overall runtime of building blocks is the **worst** space and time complexity from the whole process, meaning a space and time complexity of **O(n)** overall.
+The overall runtime of building blocks is the **worst** time and space complexity from the whole process, meaning a time and space complexity of **O(n)** overall.
 
 ### Hashing
 1. Computing T[]: calculates T[i] for **64** indices regardless of input, using 4 bytes of memory for each index. This means this is a **constant time and space** operation, or **O(1)** for both.
-2. Initialising the MD buffer A, B, C, D: again, this is the same regardless of input, so it must be a **O(1)** operation for both space and time.
+2. Initialising the MD buffer A, B, C, D: again, this is the same regardless of input, so it must be an **O(1)** operation for both time and space.
 3. For every *block*, runs 4 rounds of 16 operations. This runs a *fixed number* of operations *per block*. Therefore, it runs in **O(n)**, where *n* denotes the number of **blocks** this time, not **input bytes**. The implication of this is that in cases where the input is longer but the number of blocks remains the same, this part of the MD5 algorithm runs in the same amount of time. Also, no extra memory is needed in this loop, it just uses existing data strucutres. Therefore, it uses "constant extra space" for all iterations of the loop, meaning **O(1) space complexity**.
 
 The overall running time of the hashing algorithm is then the worst complexity of those steps, so it runs in **O(n)** time, but uses **O(1)** extra space, since the blocks are already supplied from the previous step
@@ -343,13 +343,13 @@ Why is this useful?
 
 The time complexity of retrieving elements from a lookup table depends on the data structure used:
 
-* For a simple array of passwords and corresponding hash values in no particular order, every password must be iterated through until the matching password is found. In this case, lookup time is of the order **O(n)**, where *n* is the number of password-hash pairs in the table. This is assuming the worst case, where the password wasn't actually in the table at all, so all passwords had to be checked for a match. The space complexity is also clearly **O(n)**, where every extra password and hash pair add a certain amount of memory overhead.
+* For a simple array of passwords and corresponding hash values in no particular order, every password must be iterated through until the matching password is found. In this case, lookup time is of the order **O(n)**, where *n* is the number of password-hash pairs in the table. This is assuming the worst-case, where the password wasn't actually in the table at all, so all passwords had to be checked for a match. The space complexity is also clearly **O(n)**, where every extra password and hash pair add a certain amount of memory overhead.
 
-* If the above array is **sorted** by how **common** each password is, on average, passwords can be cracked much quicker. A match for common passwords would be found sooner. However, the worst case time and space complexity remains the same.
+* If the above array is **sorted** by how **common** each password is, on average, passwords can be cracked much quicker. A match for common passwords would be found sooner. However, the worst-case time and space complexity remains the same.
 
-* If the above data structure is **sorted** with passwords in **lexicographical order**, a [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) can be performed to lookup passwords, reducing the time complexity to the order of **O(log n)** in the worst case. Since the array was just reordered, the space complexity remains the same.
+* If the above data structure is **sorted** with passwords in **lexicographical order**, a [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) can be performed to lookup passwords, reducing the time complexity to the order of **O(log n)** in the worst-case. Since the array was just reordered, the space complexity remains the same.
 
-* Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a huge lookup table could cause collisions, causing the time complexity to approach a worst case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
+* Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a huge lookup table could cause collisions, causing the time complexity to approach a worst-case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
 
 As shown, it is possible for passwords to be cracked in **O(1)** time, if space is sacrified, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
 
