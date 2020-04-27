@@ -1,7 +1,7 @@
 # MD5
 
 ## Notice about the Project's Rescope
-Since the completion of the COVID-19 rescoped version to this project, some content from this document has been changed or moved to [overview.md](overview.md) to satisfy the additional requirements and ch[overviewanges made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
+Since the completion of the COVID-19 rescoped version to this project, some content from this document has been changed or moved to [overview.md](overview.md) to satisfy the additional requirements and changes made to the code. To view the state of this project when it was originally completed before the rescope, you can view the project from [this commit](https://github.com/Ronan-H/md5/tree/529d4e4dd5e3a538c371f1900ecb9e99d03659eb).
 
 ---
 
@@ -13,21 +13,21 @@ Since the completion of the COVID-19 rescoped version to this project, some cont
  * [Simplification: Using Bytes](#simplification-using-bytes)
 
 ## Repo Contents
-**test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
+**resources/**: Resources for use in this document. This directory can be ignored.
 
-**resources/**: Resources for use in *overview.md*. This directory can be ignored.
+**test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
 **.gitignore**: Gitignore file, ignoring IDE and compilation files.
 
-**README.md**: This README file.
-
-**overview.md**: Documentation added for the completion of the 70% rescoped portion of the project.
+**README.md *(this file)***: The README file, originally written for the 30% version of this project.
 
 **main.c**: Program entry point, containing *main()*. Processes command line options, and implements the hashing, cracking, and testing suites. Makes use of *md5.c* for producing hash values.
 
 **md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32-bit *word* values as bits, display blocks, etc.
 
 **md5.h**: Header file containing definitions for both *md5.c* and *main.c*.
+
+**overview.md**: Documentation added for the completion of the 70% rescoped portion of the project.
 
 ## How to Compile and Run
 
@@ -58,12 +58,12 @@ gcc md5.c main.c -o md5 -lm
 
 MD5 *(message digest 5)* is a hash function, taking an arbitrary number of bits as input and converting it into 128 bits of output, represented as 32 characters of hexadecimal. MD5 was used heavily for storing the hash of passwords, to authenticate users without storing their actual password, and for verifying the integrity of files by pairing them with their hash.
 
-Additional information about how MD5 works, and about the suite of tests I created to help me develop my implementation, can be found in [overview.md](overview.md).
+Additional information about how MD5 works, and about the suite of tests that I created to help me develop my implementation, can be found in [overview.md](overview.md).
 
 ## How I Wrote it
 
 ### Research
-I was mostly able to just follow the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) to complete the assignment, which fully specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to make it easier for me to follow along. I found I didn't really need to do too much research to complete the assignment, as the C concepts I used were taught to us across two modules (Procedural Programming and Advanced Procedural Programming) in second year. There were a few things I didn't know how to do in C, or had forgotten how to do, such as allocating memory with ```malloc()```, and using ```sprintf()``` to store a formatted string in a *char* array. Any time I needed help like this, I included a comment in my code to the web page I used to help me along (usually a Stack Overflow answer). This was the first time I had to consider *endianness* in a project, which I found very confusing, but again I was able to just read the RFC to make sure that the bits/bytes were being ordered correctly.
+I was mostly able to just follow the published [RFC 1321](https://www.ietf.org/rfc/rfc1321.txt) to complete the assignment, which fully specifies the MD5 algorithm. I usually used the same variable and type names as the RFC too, to make it easier for me to follow along. I found I didn't really need to do too much research to complete the assignment, as the C concepts I used were taught to us across two modules (*Procedural Programming* and *Advanced Procedural Programming*) in second year. There were a few things I didn't know how to do in C, or had forgotten how to do, such as allocating memory with ```malloc()```, and using ```sprintf()``` to store a formatted string in a *char* array. Any time I needed help like this, I included a comment in my code to the web page I used to help me along (usually a Stack Overflow answer). This was the first time I had to consider *endianness* in a project, which I found very confusing, but again I was able to just read the RFC to make sure that the bits/bytes were being ordered correctly.
 
 ### Getting Started, and Running into Difficulties
 I began by defining some easy *function-like* macros, such as F(), G(), H() and I(). These were pretty easy to implement, as it was just a matter of translating the mathematical functions given in the RFC into C code.

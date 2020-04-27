@@ -18,19 +18,21 @@ In the original version of this project, I implemented the MD5 algorithm in C, a
 As part of this document being *"pitched at students  in  the  year  below"*, I have included some question and answer blocks. The question should be thought about before opening the answer and reading on.
 
 ## Repo Contents
-**test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
-
 **resources/**: Resources for use in this document. This directory can be ignored.
+
+**test_input/**: Test input files. Contains 9 different files of different sizes and types in an attempt to cover as many edge cases as possible.
 
 **.gitignore**: Gitignore file, ignoring IDE and compilation files.
 
 **README.md**: The README file, originally written for the 30% version of this project.
 
-**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32-bit *word* values as bits, display blocks, etc.
-
 **main.c**: Program entry point, containing *main()*. Processes command line options, and implements the hashing, cracking, and testing suites. Makes use of *md5.c* for producing hash values.
 
+**md5.c**: MD5 implementation in C. Also contains functions to convert a byte array into blocks, display 32-bit *word* values as bits, display blocks, etc.
+
 **md5.h**: Header file containing definitions for both *md5.c* and *main.c*.
+
+**overview.md *(this file)***: Documentation added for the completion of the 70% rescoped portion of the project.
 
 ## How to Compile and Run
 
