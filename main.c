@@ -163,7 +163,7 @@ void runCrackUtility(int maxLength) {
 
     // get reference hash from user
     puts("Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592");
-    puts("Expected plaintext alpahbet: [a-z]*");
+    puts("Expected plaintext alphabet: [a-z]*");
     printf("Trying up to plaintext length: %d\n\n", maxLength);
     printf("Enter a reference MD5 hash to crack: ");
     fgets(refHash, 33, stdin);

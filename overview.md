@@ -13,7 +13,7 @@
  * [References](#references)
 
 ## Introduction
-In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialing all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst-case time and space complexity when different approaches are used.
+In the original version of this project, I implemented the MD5 algorithm in C, and proved it's accuracy using a suite of tests. In the rescoped version of this project, I have expanded on the implementation, adding command line options, and a cracking utility. In this document, I go into greater detail to describe the MD5 algorithm, and demonstrate how MD5 hashes can be cracked using the approaches of brute-force by trialling all the possible permutations of the input space, and lookup tables. I also explain how those approaches are infeasible for larger sizes of input, and break down both MD5 and those reversal algorithms to show the worst-case time and space complexity when different approaches are used.
 
 As part of this document being *"pitched at students  in  the  year  below"*, I have included some question and answer blocks. The question should be thought about before opening the answer and reading on.
 
@@ -138,7 +138,7 @@ MATCHES? -- YES --
 Exiting...
 ```
 
-As shown, the implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths. Notice that I included different file formats for some of the tests as well, including *WAV*, an audio format, and *PNG*, an image format. It is important to test your code against as wide a range of inputs as possible, without making any asssumptions about inputs that "should work". Remember, purposely writing tests that you know will pass **are of no use**. Failing tests highlight flaws in your code, which you can fix.
+As shown, the implementation produces the correct hash for all 9 test files. It also produces the correct hash for the test cases provided in the RFC, but I wanted my own test cases to test the boundaries of the different padding lengths. Notice that I included different file formats for some of the tests as well, including *WAV*, an audio format, and *PNG*, an image format. It is important to test your code against as wide a range of inputs as possible, without making any assumptions about inputs that "should work". Remember, purposely writing tests that you know will pass **are of no use**. Failing tests highlight flaws in your code, which you can fix.
 
 The *EXPECTED* hash value for each test case was found by running the ```md5sum``` command (included in most "Unix-like" operating systems) for all files in the *test_input/* directory, like so: ```md5sum test_input/*```, which produces the following output:
 
@@ -173,12 +173,12 @@ Exiting...
 ```
 
 ### Option: --crack
-As a talking point for this document, I have also added the ```--crack``` option. When this option is given, the user can enter any MD5 hash, and the program will attempt to reverse it. The time taken to brute-force every permutation of characters for a certain length is shown, to demonstrate that the time taken to crack hashes in this fashion grows exponentially with the size of the input. As shown when the option is used, the crack utility exhausts the permutations of all strings containins lowercase alphabet characters, including the empty string, up to a maximum length of 5 characters. If a match is found, or no match is found after exhausting the entire search space, the program exits.
+As a talking point for this document, I have also added the ```--crack``` option. When this option is given, the user can enter any MD5 hash, and the program will attempt to reverse it. The time taken to brute-force every permutation of characters for a certain length is shown, to demonstrate that the time taken to crack hashes in this fashion grows exponentially with the size of the input. As shown when the option is used, the crack utility exhausts the permutations of all strings containing lowercase alphabet characters, including the empty string, up to a maximum length of 5 characters. If a match is found, or no match is found after exhausting the entire search space, the program exits.
 
 ```
 ronan@ronan-desktop:~/code/md5$ ./md5 --crack
 Expected hash input format: 32 lowercase hex characters, E.g.: 5d41402abc4b2a76b9719d911017c592
-Expected plaintext alpahbet: [a-z]*
+Expected plaintext alphabet: [a-z]*
 Trying up to plaintext length: 5
 
 Enter a reference MD5 hash to crack: 5d41402abc4b2a76b9719d911017c592
@@ -225,7 +225,7 @@ The process of producing an MD5 hash can be broken down into two separate algori
 Here is a breakdown of how I converted a simple array of input bytes into a format which is usable for the MD5 hashing algorithm:
 
 ### Constructing Blocks, Step by Step
-1. Copy the input into a new byte array ```buffer```, alocating some extra space at the end for the padding scheme. Copying the array also prevents the original array being passed in from being modified. This is important because the crack utility repeatadly makes use of the same input byte buffer.
+1. Copy the input into a new byte array ```buffer```, allocating some extra space at the end for the padding scheme. Copying the array also prevents the original array being passed in from being modified. This is important because the crack utility repeatedly makes use of the same input byte buffer.
 2. Compute the exact number of padding bytes needed to append to the message.
    * For this I came up with the formula ```paddingBytes = 65 - ((length + 8) % 64 + 1)```
 3. Compute the total number of bytes needed for all blocks: ```totalBytes = length + paddingBytes + 8```
@@ -238,7 +238,7 @@ Here is a breakdown of how I converted a simple array of input bytes into a form
 
 <div align="center"><kbd><img style="border: thin solid black" src="./resources/block-building-diagram.jpeg" alt="Plot of logarithmic time to brute-force" width="500px" align="center"></kbd></div>
 
-Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimension array of bytes, where each chunk of 64 bytes can be viewed as an invividual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
+Once the input has been processed into blocks, or at least into a format that can easily be interpreted as blocks of bytes (the RFC represents blocks using a single dimension array of bytes, where each chunk of 64 bytes can be viewed as an individual block), it now has to be processed using the actual MD5 hashing algorithm. This is actually the easiest part of the process, since the RFC outlines exactly what to do. It is not actually necessary to understand what each step in the algorithm is trying to achieve, in order to implement it.
 
 ### Producing the MD5 Hash Value
 Here are the steps involved in generating an MD5 hash value, based on the input format created above:
@@ -246,15 +246,15 @@ Here are the steps involved in generating an MD5 hash value, based on the input 
 1. Generate T[]. *"Let T[i] denote the i-th element of the table, which
    is equal to the integer part of 4294967296 times abs(sin(i)), where i
    is in radians*". Some implementations of MD5 hard code these values, but I prefer to generate them in a loop, storing them in an array for use in the following steps.
-2. Initialise the "MD Buffer": four 32-bit *word* values A, B, C, and D, where each variable gets a specific, prefefined value. Values will be added to this buffer after each round, and afterwards, these values make up the hash value itself.
+2. Initialise the "MD Buffer": four 32-bit *word* values A, B, C, and D, where each variable gets a specific, predefined value. Values will be added to this buffer after each round, and afterwards, these values make up the hash value itself.
 3. Process each block in turn. In my implementation, this is simply a loop through each block X, from the array of blocks M.
-   1. Initialise variables AA, BB, CC, and DD, initialised to A, B , C, and D respectively.
+   1. Initialise variables AA, BB, CC, and DD, initialised to A, B, C, and D respectively.
    2. Manipulate A, B, C, and D, in a series of four "rounds", each with sixteen individual operations. These incorporate bytes from the current block X, values from T in ascending order of index, and bitwise logic defined in the auxiliary functions F(), G(), H(), and I. In these steps, the input bytes get scrambled in a way that is not directly reversible.
    3. Add AA to A, BB to B, and so on. Here, hashed data from the current round accumulates with hashed data from all previous rounds.
 4. Print ABCD in low-byte order, expressed as 32 lowercase hexadecimal characters, where each series of 8 characters represents A, B, C, and D. In my implementation, this string is actually returned from the function instead of being printed, so that the hash can be used in other ways. This string of characters is the final MD5 hash value.
 
 ## Complexity of MD5
-What order of time and space complexity should be expceted for any hashing algorithm?
+What order of time and space complexity should be expected for any hashing algorithm?
 
 <details>
 <summary>My Answer</summary>
@@ -269,8 +269,8 @@ With that in mind, let's take a look at the time and space complexities for my i
 
 ### Building Blocks
 1. Copying the input array, leaving some extra space for padding: every extra byte needed to be copied takes some fixed amount of time to copy, and one extra byte of space. As such, the time and space complexities for this operation must be **O(n)**. The extra space allocated is constant for all sizes of inputs, and therefore is not relevant to the time and space complexities.
-2. Computing the number of padding bytes needed, appending the first bit of padding, etc...: this is a **constant time** operation, running in **O(1)** time and space. In other words, no mater what the input is, these operations take the same amount of time, and the same amount of space.
-3. Appending the padding bits: this is difficult to classify, since the number of padding bits needed **changes depending on *n***, and is not proportional to the size of the input. However, since there is a small, fixed upper bound on the number of padding bits which are needed with varying lengths of input, I would say this step  could be approximated as **O(1)** time and space.
+2. Computing the number of padding bytes needed, appending the first bit of padding, etc...: this is a **constant time** operation, running in **O(1)** time and space. In other words, no matter what the input is, these operations take the same amount of time, and the same amount of space.
+3. Appending the padding bits: this is difficult to classify, since the number of padding bits needed **changes depending on *n***, and is not proportional to the size of the input. However, since there is a small, fixed upper bound on the number of padding bits which are needed with varying lengths of input, I would say this step could be approximated as **O(1)** time and space.
 4. Copying the input array into a series of *word* blocks: every byte of input must be individually copied to a block, and doing so uses array accesses and bitwise operations which run in constant time, so the overall time taken for this operation is **O(n)**. In a similar way, one byte of extra space is needed for every byte of input, so this also uses **O(n)** space.
 
 The overall runtime of building blocks is the **worst** time and space complexity from the whole process, meaning a time and space complexity of **O(n)** overall.
@@ -278,7 +278,7 @@ The overall runtime of building blocks is the **worst** time and space complexit
 ### Hashing
 1. Computing T[]: calculates T[i] for **64** indices regardless of input, using 4 bytes of memory for each index. This means this is a **constant time and space** operation, or **O(1)** for both.
 2. Initialising the MD buffer A, B, C, D: again, this is the same regardless of input, so it must be an **O(1)** operation for both time and space.
-3. For every *block*, runs 4 rounds of 16 operations. This runs a *fixed number* of operations *per block*. Therefore, it runs in **O(n)**, where *n* denotes the number of **blocks** this time, not **input bytes**. The implication of this is that in cases where the input is longer but the number of blocks remains the same, this part of the MD5 algorithm runs in the same amount of time. Also, no extra memory is needed in this loop, it just uses existing data strucutres. Therefore, it uses "constant extra space" for all iterations of the loop, meaning **O(1) space complexity**.
+3. For every *block*, runs 4 rounds of 16 operations. This runs a *fixed number* of operations *per block*. Therefore, it runs in **O(n)**, where *n* denotes the number of **blocks** this time, not **input bytes**. The implication of this is that in cases where the input is longer but the number of blocks remains the same, this part of the MD5 algorithm runs in the same amount of time. Also, no extra memory is needed in this loop, it just uses existing data structures. Therefore, it uses "constant extra space" for all iterations of the loop, meaning **O(1) space complexity**.
 
 The overall running time of the hashing algorithm is then the worst complexity of those steps, so it runs in **O(n)** time, but uses **O(1)** extra space, since the blocks are already supplied from the previous step
 
@@ -291,7 +291,7 @@ Although directly reversing a hash function is impossible, you can still repeate
 
 Although this attack is simple, the time complexity of it makes it infeasible in a lot of situations. Every extra bit which you are brute-forcing through *doubles* the number of hashes needed to exhaust all of the permutations. This implies a time complexity in the order of **O(2<sup>n</sup>)**. This is one of the **worst** time complexities you can have. Just to brute-force input to the MD5 algorithm that produces a single block (512 bits), at worst you would have to generate and compare 2<sup>512</sup> hash values, which is a massive number and completely infeasible.
 
-However, in the area of **password cracking**, bit permutations do not need to be exhausted completely. This is because only some permutations of bits actually represent a string of charaters. In the case of the simple cracking utility that I created for this project, only the lowercase letters *a to z* are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *26* is the size of the alphabet being used, and *n* is the *length of the string, in characters*. For example, to brute-force through all the strings of length 5 from an alphabet a-z, at worst it could take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can be computed quite quickly, strings of this length can actually be cracked in a short amount of time. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this would still be represented as having a worst-case time complexity of **O(26<sup>n</sup>)**.
+However, in the area of **password cracking**, bit permutations do not need to be exhausted completely. This is because only some permutations of bits actually represent a string of characters. In the case of the simple cracking utility that I created for this project, only the lowercase letters *a to z* are tested. As such, the complexity is reduced to the order of **O(26<sup>n</sup>)**, where *26* is the size of the alphabet being used, and *n* is the *length of the string, in characters*. For example, to brute-force through all the strings of length 5 from an alphabet a-z, at worst it could take **26<sup>5</sup> = 11,881,376** iterations. Since each hash can be computed quite quickly, strings of this length can actually be cracked in a short amount of time. Reversing a string of unknown length up to a length *n* takes 26<sup>0</sup> + 26<sup>1</sup> + ... + 26<sup>n</sup> hash generations at worst, but this would still be represented as having a worst-case time complexity of **O(26<sup>n</sup>)**.
 
 A plot can be created, using the timer values shown by the **--crack** option, to show the exponential relationship between the length of a string and the time it takes to exhaust all the permutations for strings of that length, in this case to reverse a hash:
 
@@ -318,17 +318,17 @@ Do you know some of the reasons why this might be?
   * In the case of timing the same code on multiple different systems, any differences in hardware, operating system, or configuration etc. can cause wild differences in timer values.
   * And more, similar reasons...
 
-  As such, code execution times should be taken with a pinch of salt. Big O notation should be used instead, which provides a method of measauring code performance that is unaffected by all of the issues mentioned above. For the purposes of this document, though, I think the plots offer a great visualisation of this algorithms performance over varying values of *n*.
+  As such, code execution times should be taken with a pinch of salt. Big O notation should be used instead, which provides a method of measuring code performance that is unaffected by all of the issues mentioned above. For the purposes of this document, though, I think the plots offer a great visualisation of this algorithms performance over varying values of *n*.
 
 </details>
 
 That's just one method of reversing a hashed string, though. Specific to the area of password cracking, there are more powerful methods.
 
 ### Trading Space for Time
-In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algortihm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing values of *n*. However, it can be seen that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrified to reduce the exponential time complexity.
+In software, there is a constant battle between **space** (I.e. memory) constraints, and **time** constraints. In many cases, **space** can be "traded" for faster execution **time**, and vice versa. In the above example of an algorithm which can reverse an MD5 hash, the time taken to reverse a hashed string of length *n* grows *exponentially* with increasing values of *n*. However, it can be seen that the algorithm actually uses **very little space**. For a string length of *n*, a buffer of size *n* to store and manipulate the characters which it's trying to hash against the reference hash is needed, giving a space complexity of **O(n)** with a tiny overhead for increasing values of *n*. In practice, the space used by the algorithm is tiny, so space should gladly be sacrificed to reduce the exponential time complexity.
 
 #### Simple Lookup Tables
-In many areas of computing, lookup tables can be used to "precompute" the result of a computation, allowing the result to be looked up in a data structure during runtime instead of having to compute the result again. One example of this is caching, which is prevalant in the areas of DNS lookups and web page requests, to name a few. In the area of password cracking, lookup tables can be formed by mapping passwords to their corresponding hash value.
+In many areas of computing, lookup tables can be used to "precompute" the result of a computation, allowing the result to be looked up in a data structure during runtime instead of having to compute the result again. One example of this is caching, which is prevalent in the areas of DNS lookups and web page requests, to name a few. In the area of password cracking, lookup tables can be formed by mapping passwords to their corresponding hash value.
 
 Why is this useful?
 
@@ -351,14 +351,14 @@ The time complexity of retrieving elements from a lookup table depends on the da
 
 * Using a **hash table** instead can reduce the time complexity down to **O(1)**, but in reality, a huge lookup table could cause collisions, causing the time complexity to approach a worst-case of **O(n)**. Space complexity remains **O(n)** as with the other data structures, but again in reality hash tables use more memory than traditional arrays, with the overhead of buckets and collision chains.
 
-As shown, it is possible for passwords to be cracked in **O(1)** time, if space is sacrified, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
+As shown, it is possible for passwords to be cracked in **O(1)** time, if space is sacrificed, with the drawback that some passwords may not be in the table, and so can not be cracked by this method. This method is useful in cracking individual passwords. Using a similar technique, large portions of a **database** of password hashes can be cracked much more quickly, if the process is **reversed:**
 
 #### Reverse Lookup Tables
 Above, we started with a password hash, and searched for it in a table mapping hashes to plaintext passwords. Instead, we can start with the hash of a common password, and lookup the **database** of password hashes to ask the question *"I have this hash; who in the database has a password who hashes to this value?*. In this fashion, *many* password hashes can be cracked with a *single* pass through the database. In a large database, a large percentage of user passwords could be cracked by just performing a reverse lookup of the top 10 most commonly used passwords, for example. Another useful property of this idea is that less time is wasted trying to lookup a user's password who's hash isn't in the table at all.
 
 **Time and Space Complexity**
 
-Using this method, passwords for **all users** whos corresponding password hash is in the lookup table can be cracked in **O(n)** time, where *n* is the number of users in the database. Notably, comparing every password hash to every user's hash takes **O(nm)** at worst, where *n* is the number of users and *m* is the number of passwords in the database, for lookup tables **and** reverse lookup tables. Space complexity remains the same for both as well, having to store both the database and lookup table in memory.
+Using this method, passwords for **all users** whose corresponding password hash is in the lookup table can be cracked in **O(n)** time, where *n* is the number of users in the database. Notably, comparing every password hash to every user's hash takes **O(nm)** at worst, where *n* is the number of users and *m* is the number of passwords in the database, for lookup tables **and** reverse lookup tables. Space complexity remains the same for both as well, having to store both the database and lookup table in memory.
 
 ### Taking Shortcuts
 The above methods of reversing a hash assumed that MD5 holds the following properties:
@@ -375,11 +375,11 @@ MD5 collisions have been found and used as an attack vector, and a theoretical p
 
 [Password Cracking - Computerphile](https://youtu.be/7U-RbOKanYs)
 
-* Great information about what password cracking is, and the various methods that can be used, such as brute-forcing through all the permutations of characters, and lookup tables, which I talked about a lot in this document. Talks about the aproximate time it takes to crack passwords of a certain length using those methods, and shows how longer passwords can be exponentially harder to crack. Also demonstrates how powerful these methods can be when paired with a rediculous server machine with 4x NVIDIA Titan X graphics cards installed.
+* Great information about what password cracking is, and the various methods that can be used, such as brute-forcing through all the permutations of characters, and lookup tables, which I talked about a lot in this document. Talks about the approximate time it takes to crack passwords of a certain length using those methods, and shows how longer passwords can be exponentially harder to crack. Also demonstrates how powerful these methods can be when paired with a ridiculous server machine with 4x NVIDIA Titan X graphics cards installed.
 
 [MD5 - Wikipedia](https://en.wikipedia.org/wiki/MD5)
 
-* Detailed information on the MD5 algorithm. This article was particularly useful in helping me write about the vulnerabilities of MD5, for example. I read several other Wikipiedia articles related to hashing, too.
+* Detailed information on the MD5 algorithm. This article was particularly useful in helping me write about the vulnerabilities of MD5, for example. I read several other Wikipedia articles related to hashing, too.
 
 [Hash table - Wikipedia](https://en.wikipedia.org/wiki/Hash_table)
 
